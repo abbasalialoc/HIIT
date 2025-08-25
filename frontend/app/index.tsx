@@ -340,96 +340,104 @@ export default function ExerciseTimer() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Exercise Timer</Text>
-        <TouchableOpacity 
-          style={styles.settingsButton}
-          onPress={() => router.push('/settings')}
-        >
-          <Ionicons name="settings-outline" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Workout Progress */}
-      <View style={styles.progressContainer}>
-        <Text style={styles.progressText}>
-          Circuit {currentCircuit} of {circuits} • Exercise {currentExerciseIndex + 1} of {activeExercises.length} • Set {currentSet} of {setsPerExercise}
-        </Text>
-      </View>
-
-      {/* Current Exercise */}
-      {currentExercise && (
-        <View style={styles.exerciseContainer}>
-          <Text style={styles.exerciseName}>{currentExercise.name}</Text>
-          <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
-          
-          {/* Animated Stick Figure */}
-          <StickFigure 
-            exercise={currentExercise.name} 
-            isAnimating={timerState === 'work'} 
-          />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading workout...</Text>
         </View>
-      )}
-
-      {/* Timer Display */}
-      <View style={[styles.timerContainer, { backgroundColor: getTimerColor() }]}>
-        <Text style={styles.statusText}>{getStatusText()}</Text>
-        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
-      </View>
-
-      {/* Control Buttons */}
-      <View style={styles.controlsContainer}>
-        {timerState === 'ready' && (
-          <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
-            <Ionicons name="play" size={32} color="#fff" />
-            <Text style={styles.buttonText}>Start Workout</Text>
-          </TouchableOpacity>
-        )}
-
-        {(timerState === 'work' || timerState === 'rest') && (
-          <TouchableOpacity style={styles.pauseButton} onPress={pauseWorkout}>
-            <Ionicons name="pause" size={32} color="#fff" />
-            <Text style={styles.buttonText}>Pause</Text>
-          </TouchableOpacity>
-        )}
-
-        {timerState === 'paused' && (
-          <View style={styles.pausedControls}>
-            <TouchableOpacity style={styles.resumeButton} onPress={resumeWorkout}>
-              <Ionicons name="play" size={24} color="#fff" />
-              <Text style={styles.buttonText}>Resume</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
-              <Ionicons name="refresh" size={24} color="#fff" />
-              <Text style={styles.buttonText}>Reset</Text>
+      ) : (
+        <>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Exercise Timer</Text>
+            <TouchableOpacity 
+              style={styles.settingsButton}
+              onPress={() => router.push('/settings')}
+            >
+              <Ionicons name="settings-outline" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
-        )}
 
-        {timerState === 'finished' && (
-          <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
-            <Ionicons name="refresh" size={32} color="#fff" />
-            <Text style={styles.buttonText}>Start New Workout</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+          {/* Workout Progress */}
+          <View style={styles.progressContainer}>
+            <Text style={styles.progressText}>
+              Circuit {currentCircuit} of {circuits} • Exercise {currentExerciseIndex + 1} of {activeExercises.length} • Set {currentSet} of {setsPerExercise}
+            </Text>
+          </View>
 
-      {/* Quick Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{workTime}s</Text>
-          <Text style={styles.statLabel}>Work</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{restTime}s</Text>
-          <Text style={styles.statLabel}>Rest</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{activeExercises.length}</Text>
-          <Text style={styles.statLabel}>Exercises</Text>
-        </View>
-      </View>
+          {/* Current Exercise */}
+          {currentExercise && (
+            <View style={styles.exerciseContainer}>
+              <Text style={styles.exerciseName}>{currentExercise.name}</Text>
+              <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
+              
+              {/* Animated Stick Figure */}
+              <StickFigure 
+                exercise={currentExercise.name} 
+                isAnimating={timerState === 'work'} 
+              />
+            </View>
+          )}
+
+          {/* Timer Display */}
+          <View style={[styles.timerContainer, { backgroundColor: getTimerColor() }]}>
+            <Text style={styles.statusText}>{getStatusText()}</Text>
+            <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+          </View>
+
+          {/* Control Buttons */}
+          <View style={styles.controlsContainer}>
+            {timerState === 'ready' && (
+              <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
+                <Ionicons name="play" size={32} color="#fff" />
+                <Text style={styles.buttonText}>Start Workout</Text>
+              </TouchableOpacity>
+            )}
+
+            {(timerState === 'work' || timerState === 'rest') && (
+              <TouchableOpacity style={styles.pauseButton} onPress={pauseWorkout}>
+                <Ionicons name="pause" size={32} color="#fff" />
+                <Text style={styles.buttonText}>Pause</Text>
+              </TouchableOpacity>
+            )}
+
+            {timerState === 'paused' && (
+              <View style={styles.pausedControls}>
+                <TouchableOpacity style={styles.resumeButton} onPress={resumeWorkout}>
+                  <Ionicons name="play" size={24} color="#fff" />
+                  <Text style={styles.buttonText}>Resume</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
+                  <Ionicons name="refresh" size={24} color="#fff" />
+                  <Text style={styles.buttonText}>Reset</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {timerState === 'finished' && (
+              <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
+                <Ionicons name="refresh" size={32} color="#fff" />
+                <Text style={styles.buttonText}>Start New Workout</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Quick Stats */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{workTime}s</Text>
+              <Text style={styles.statLabel}>Work</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{restTime}s</Text>
+              <Text style={styles.statLabel}>Rest</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{activeExercises.length}</Text>
+              <Text style={styles.statLabel}>Exercises</Text>
+            </View>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 }
