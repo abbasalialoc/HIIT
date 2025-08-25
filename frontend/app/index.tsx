@@ -623,6 +623,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
+  countdownPulse: {
+    borderWidth: 3,
+    borderColor: '#fff',
+  },
+  countdownText: {
+    fontSize: 68,
+    fontWeight: '900',
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+  },
+  countdownAlert: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '600',
+    marginTop: 8,
+    opacity: 0.9,
+  },
   controlsContainer: {
     paddingHorizontal: 20,
     paddingVertical: 20,
