@@ -295,7 +295,10 @@ export default function ExerciseTimer() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Exercise Timer</Text>
-        <TouchableOpacity style={styles.settingsButton}>
+        <TouchableOpacity 
+          style={styles.settingsButton}
+          onPress={() => router.push('/settings')}
+        >
           <Ionicons name="settings-outline" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
