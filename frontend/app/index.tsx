@@ -84,25 +84,17 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
     }
   }, [isAnimating, exercise]);
 
-  // For push-ups, show video instead of stick figure
+  // For push-ups, show GIF instead of stick figure
   if (exercise === 'Push-ups') {
     return (
       <View style={styles.stickFigureContainer}>
-        {/* Temporarily show stick figure until video issue is resolved */}
-        <Animated.View style={[{ transform: [{ translateY: animationValue.value * 20 }] }]}>
-          <Svg width="120" height="80" viewBox="0 0 120 80">
-            <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
-            <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="30" x2="40" y2="45" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="30" x2="80" y2="45" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="50" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="50" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
-          </Svg>
-        </Animated.View>
-        {/* Video integration will be added once loading issue is resolved */}
-        <Text style={{color: '#a0a0a0', fontSize: 12, marginTop: 8}}>
-          Video coming soon!
-        </Text>
+        <View style={styles.videoContainer}>
+          <Image
+            source={require('../assets/push-up-animation.gif')}
+            style={styles.exerciseVideo}
+            resizeMode="contain"
+          />
+        </View>
       </View>
     );
   }
