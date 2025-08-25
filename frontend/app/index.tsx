@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   Dimensions,
   Platform,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Line, Circle, G } from 'react-native-svg';
