@@ -48,7 +48,13 @@ type TimerState = 'ready' | 'work' | 'rest' | 'paused' | 'finished';
 // Simple animated stick figure component with video for push-ups
 const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exercise, isAnimating }) => {
   const animationValue = useSharedValue(0);
-  const videoRef = useRef<Video>(null);
+
+  // Video player setup for push-ups
+  const videoSource = 'https://customer-assets.emergentagent.com/job_move-rest-timer/artifacts/r67nltvu_baloon-push-up.mp4';
+  const player = useVideoPlayer(videoSource, (player) => {
+    player.loop = true;
+    player.muted = true;
+  });
 
   useEffect(() => {
     if (isAnimating) {
@@ -67,32 +73,31 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
 
   // Handle video playback for push-ups
   useEffect(() => {
-    if (exercise === 'Push-ups' && videoRef.current) {
+    if (exercise === 'Push-ups' && player) {
       if (isAnimating) {
-        videoRef.current.playAsync();
+        player.play();
       } else {
-        videoRef.current.pauseAsync();
-        videoRef.current.setPositionAsync(0); // Reset to beginning
+        player.pause();
+        // Reset video to beginning
+        player.seekTo(0);
       }
     }
-  }, [isAnimating, exercise]);
+  }, [isAnimating, exercise, player]);
 
   // For push-ups, show video instead of stick figure
   if (exercise === 'Push-ups') {
     return (
       <View style={styles.stickFigureContainer}>
-        <Video
-          ref={videoRef}
-          style={styles.exerciseVideo}
-          source={{
-            uri: 'https://customer-assets.emergentagent.com/job_move-rest-timer/artifacts/r67nltvu_baloon-push-up.mp4',
-          }}
-          useNativeControls={false}
-          resizeMode={ResizeMode.CONTAIN}
-          isLooping
-          isMuted
-          shouldPlay={isAnimating}
-        />
+        <View style={styles.videoContainer}>
+          <VideoView
+            style={styles.exerciseVideo}
+            player={player}
+            allowsFullscreen={false}
+            allowsPictureInPicture={false}
+            contentFit="contain"
+            nativeControls={false}
+          />
+        </View>
       </View>
     );
   }
