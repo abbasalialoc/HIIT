@@ -44,9 +44,10 @@ const EXERCISES: Exercise[] = [
 // Timer states
 type TimerState = 'ready' | 'work' | 'rest' | 'paused' | 'finished';
 
-// Simple animated stick figure component
+// Simple animated stick figure component with video for push-ups
 const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exercise, isAnimating }) => {
   const animationValue = useSharedValue(0);
+  const videoRef = useRef<Video>(null);
 
   useEffect(() => {
     if (isAnimating) {
@@ -63,25 +64,41 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
     }
   }, [isAnimating]);
 
+  // Handle video playback for push-ups
+  useEffect(() => {
+    if (exercise === 'Push-ups' && videoRef.current) {
+      if (isAnimating) {
+        videoRef.current.playAsync();
+      } else {
+        videoRef.current.pauseAsync();
+        videoRef.current.setPositionAsync(0); // Reset to beginning
+      }
+    }
+  }, [isAnimating, exercise]);
+
+  // For push-ups, show video instead of stick figure
+  if (exercise === 'Push-ups') {
+    return (
+      <View style={styles.stickFigureContainer}>
+        <Video
+          ref={videoRef}
+          style={styles.exerciseVideo}
+          source={{
+            uri: 'https://customer-assets.emergentagent.com/job_move-rest-timer/artifacts/r67nltvu_baloon-push-up.mp4',
+          }}
+          useNativeControls={false}
+          resizeMode={ResizeMode.CONTAIN}
+          isLooping
+          isMuted
+          shouldPlay={isAnimating}
+        />
+      </View>
+    );
+  }
+
+  // For other exercises, use animated stick figures
   const getStickFigureAnimation = () => {
     switch (exercise) {
-      case 'Push-ups':
-        return (
-          <Animated.View style={[{ transform: [{ translateY: animationValue.value * 20 }] }]}>
-            <Svg width="120" height="80" viewBox="0 0 120 80">
-              {/* Head */}
-              <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
-              {/* Body */}
-              <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
-              {/* Arms */}
-              <Line x1="60" y1="30" x2="40" y2="45" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="30" x2="80" y2="45" stroke="#fff" strokeWidth="2" />
-              {/* Legs */}
-              <Line x1="60" y1="50" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="50" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
-            </Svg>
-          </Animated.View>
-        );
       case 'Squats':
         return (
           <Animated.View style={[{ transform: [{ translateY: animationValue.value * 30 }] }]}>
