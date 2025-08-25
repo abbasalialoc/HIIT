@@ -168,15 +168,18 @@ frontend:
 
   - task: "Animated Stick Figures"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/app/index.tsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created SVG-based animated stick figures for push-ups, squats, jumping jacks, and mountain climbers using react-native-svg and react-native-reanimated. Animations trigger during work periods."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL: Cannot test animations as React Native Web app fails to load. Browser shows Expo manifest instead of rendered app. SVG animations and React Native Reanimated components not accessible due to web bundling failure."
 
   - task: "Settings Screen"
     implemented: true
