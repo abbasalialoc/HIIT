@@ -265,46 +265,59 @@ export default function ExerciseTimer() {
       console.log('🔄 Starting to load app data...');
       
       try {
-        // Re-enable backend integration now that React 19 is working
-        const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-        console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
-        
-        if (!EXPO_BACKEND_URL) {
-          console.log('⚠️ No backend URL found, using default data');
-          setExercises(EXERCISES);
-          setLoading(false);
-          return;
-        }
-
-        console.log('📞 Making API calls to backend...');
-        const [settingsResponse, exercisesResponse] = await Promise.all([
-          fetch(`${EXPO_BACKEND_URL}/api/settings`),
-          fetch(`${EXPO_BACKEND_URL}/api/exercises`)
-        ]);
-
-        console.log('📊 API responses received:', {
-          settingsOk: settingsResponse.ok,
-          exercisesOk: exercisesResponse.ok
+        // Set a maximum timeout to ensure loading always completes
+        const timeoutPromise = new Promise((resolve) => {
+          setTimeout(() => {
+            console.log('⏰ Loading timeout - using default data');
+            setExercises(EXERCISES);
+            resolve(null);
+          }, 3000); // 3 second timeout
         });
 
-        if (settingsResponse.ok) {
-          const settings = await settingsResponse.json();
-          console.log('⚙️ Settings loaded:', settings);
-          setWorkTime(settings.workTime);
-          setRestTime(settings.restTime);
-          setSetsPerExercise(settings.setsPerExercise);
-          setCircuits(settings.circuits);
-          setTimeLeft(settings.workTime);
-        }
+        const dataPromise = (async () => {
+          const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+          console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
+          
+          if (!EXPO_BACKEND_URL) {
+            console.log('⚠️ No backend URL found, using default data');
+            setExercises(EXERCISES);
+            return;
+          }
 
-        if (exercisesResponse.ok) {
-          const exercisesData = await exercisesResponse.json();
-          console.log('🏃 Exercises loaded:', exercisesData);
-          setExercises(exercisesData);
-        } else {
-          console.log('⚠️ Using default exercises as fallback');
-          setExercises(EXERCISES);
-        }
+          console.log('📞 Making API calls to backend...');
+          const [settingsResponse, exercisesResponse] = await Promise.all([
+            fetch(`${EXPO_BACKEND_URL}/api/settings`),
+            fetch(`${EXPO_BACKEND_URL}/api/exercises`)
+          ]);
+
+          console.log('📊 API responses received:', {
+            settingsOk: settingsResponse.ok,
+            exercisesOk: exercisesResponse.ok
+          });
+
+          if (settingsResponse.ok) {
+            const settings = await settingsResponse.json();
+            console.log('⚙️ Settings loaded:', settings);
+            setWorkTime(settings.workTime);
+            setRestTime(settings.restTime);
+            setSetsPerExercise(settings.setsPerExercise);
+            setCircuits(settings.circuits);
+            setTimeLeft(settings.workTime);
+          }
+
+          if (exercisesResponse.ok) {
+            const exercisesData = await exercisesResponse.json();
+            console.log('🏃 Exercises loaded:', exercisesData);
+            setExercises(exercisesData);
+          } else {
+            console.log('⚠️ Using default exercises as fallback');
+            setExercises(EXERCISES);
+          }
+        })();
+
+        // Race between data loading and timeout
+        await Promise.race([dataPromise, timeoutPromise]);
+
       } catch (error) {
         console.error('❌ Failed to load app data:', error);
         setExercises(EXERCISES);
