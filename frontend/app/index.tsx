@@ -204,7 +204,7 @@ export default function ExerciseTimer() {
   // Audio setup
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
   // Initialize audio
   useEffect(() => {
@@ -265,6 +265,16 @@ export default function ExerciseTimer() {
   useEffect(() => {
     const loadAppData = async () => {
       console.log('🔄 Starting to load app data...');
+      console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
+      
+      // If no backend URL, use default data and skip loading
+      if (!EXPO_BACKEND_URL) {
+        console.log('⚠️ No backend URL found, using default data');
+        setExercises(EXERCISES);
+        setLoading(false);
+        return;
+      }
+
       try {
         // Use Promise.all to load both settings and exercises simultaneously
         console.log('📞 Making API calls to backend...');
@@ -289,14 +299,20 @@ export default function ExerciseTimer() {
           setTimeLeft(settings.workTime);
         }
 
-        // Handle exercises
+        // Handle exercises  
         if (exercisesResponse.ok) {
           const exercisesData = await exercisesResponse.json();
           console.log('🏃 Exercises loaded:', exercisesData);
           setExercises(exercisesData);
+        } else {
+          // Fallback to default exercises
+          console.log('⚠️ Using default exercises as fallback');
+          setExercises(EXERCISES);
         }
       } catch (error) {
         console.error('❌ Failed to load app data:', error);
+        // Use default exercises on error
+        setExercises(EXERCISES);
       } finally {
         console.log('✅ Setting loading to false');
         // Always clear loading state regardless of success/failure
