@@ -460,9 +460,23 @@ export default function ExerciseTimer() {
           )}
 
           {/* Timer Display */}
-          <View style={[styles.timerContainer, { backgroundColor: getTimerColor() }]}>
+          <View style={[
+            styles.timerContainer, 
+            { backgroundColor: getTimerColor() },
+            (timeLeft <= 3 && (timerState === 'work' || timerState === 'rest')) && styles.countdownPulse
+          ]}>
             <Text style={styles.statusText}>{getStatusText()}</Text>
-            <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+            <Text style={[
+              styles.timerText,
+              (timeLeft <= 3 && (timerState === 'work' || timerState === 'rest')) && styles.countdownText
+            ]}>
+              {formatTime(timeLeft)}
+            </Text>
+            {timeLeft <= 3 && (timerState === 'work' || timerState === 'rest') && (
+              <Text style={styles.countdownAlert}>
+                {soundEnabled ? '🔊' : '📳'} {timeLeft === 1 ? 'GO!' : 'Get Ready!'}
+              </Text>
+            )}
           </View>
 
           {/* Control Buttons */}
