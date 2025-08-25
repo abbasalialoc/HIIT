@@ -204,8 +204,6 @@ export default function ExerciseTimer() {
   // Audio setup
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-
   // Initialize audio
   useEffect(() => {
     const setupAudio = async () => {
@@ -261,13 +259,21 @@ export default function ExerciseTimer() {
     }
   };
 
-  // Load settings and exercises from backend
+  // Load settings and exercises from backend  
   useEffect(() => {
     const loadAppData = async () => {
       console.log('🔄 Starting to load app data...');
+      
+      // For now, use default data to get the app working
+      console.log('✅ Using default data for reliable app experience');
+      setExercises(EXERCISES);
+      setLoading(false);
+      
+      // TODO: Re-enable backend integration once frontend loading is stable
+      /* Backend integration code temporarily disabled
+      const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
       
-      // If no backend URL, use default data and skip loading
       if (!EXPO_BACKEND_URL) {
         console.log('⚠️ No backend URL found, using default data');
         setExercises(EXERCISES);
@@ -276,7 +282,6 @@ export default function ExerciseTimer() {
       }
 
       try {
-        // Use Promise.all to load both settings and exercises simultaneously
         console.log('📞 Making API calls to backend...');
         const [settingsResponse, exercisesResponse] = await Promise.all([
           fetch(`${EXPO_BACKEND_URL}/api/settings`),
@@ -288,7 +293,6 @@ export default function ExerciseTimer() {
           exercisesOk: exercisesResponse.ok
         });
 
-        // Handle settings
         if (settingsResponse.ok) {
           const settings = await settingsResponse.json();
           console.log('⚙️ Settings loaded:', settings);
@@ -299,25 +303,22 @@ export default function ExerciseTimer() {
           setTimeLeft(settings.workTime);
         }
 
-        // Handle exercises  
         if (exercisesResponse.ok) {
           const exercisesData = await exercisesResponse.json();
           console.log('🏃 Exercises loaded:', exercisesData);
           setExercises(exercisesData);
         } else {
-          // Fallback to default exercises
           console.log('⚠️ Using default exercises as fallback');
           setExercises(EXERCISES);
         }
       } catch (error) {
         console.error('❌ Failed to load app data:', error);
-        // Use default exercises on error
         setExercises(EXERCISES);
       } finally {
         console.log('✅ Setting loading to false');
-        // Always clear loading state regardless of success/failure
         setLoading(false);
       }
+      */
     };
 
     loadAppData();
