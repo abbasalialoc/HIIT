@@ -301,6 +301,13 @@ export default function ExerciseTimer() {
     loadAppData();
   }, []);
 
+  // Update timeLeft when workTime changes
+  useEffect(() => {
+    if (timerState === 'ready') {
+      setTimeLeft(workTime);
+    }
+  }, [workTime, timerState]);
+
   // Get active exercises only
   const activeExercises = exercises.filter(ex => ex.isActive);
   const currentExercise = activeExercises[currentExerciseIndex];
