@@ -264,65 +264,64 @@ export default function ExerciseTimer() {
     const loadAppData = async () => {
       console.log('🔄 Starting to load app data...');
       
+      // Set a 1-second timeout to ensure loading always completes quickly
+      const timeout = setTimeout(() => {
+        console.log('⏰ Fast loading timeout - ensuring app loads');
+        setExercises(EXERCISES);
+        setLoading(false);
+      }, 1000); // 1 second timeout for immediate loading
+      
       try {
-        // Set a maximum timeout to ensure loading always completes
-        const timeoutPromise = new Promise((resolve) => {
-          setTimeout(() => {
-            console.log('⏰ Loading timeout - using default data');
-            setExercises(EXERCISES);
-            resolve(null);
-          }, 3000); // 3 second timeout
+        const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+        console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
+        
+        if (!EXPO_BACKEND_URL) {
+          console.log('⚠️ No backend URL found, using default data');
+          clearTimeout(timeout);
+          setExercises(EXERCISES);
+          setLoading(false);
+          return;
+        }
+
+        console.log('📞 Making API calls to backend...');
+        const [settingsResponse, exercisesResponse] = await Promise.all([
+          fetch(`${EXPO_BACKEND_URL}/api/settings`),
+          fetch(`${EXPO_BACKEND_URL}/api/exercises`)
+        ]);
+
+        console.log('📊 API responses received:', {
+          settingsOk: settingsResponse.ok,
+          exercisesOk: exercisesResponse.ok
         });
 
-        const dataPromise = (async () => {
-          const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-          console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
-          
-          if (!EXPO_BACKEND_URL) {
-            console.log('⚠️ No backend URL found, using default data');
-            setExercises(EXERCISES);
-            return;
-          }
+        if (settingsResponse.ok) {
+          const settings = await settingsResponse.json();
+          console.log('⚙️ Settings loaded:', settings);
+          setWorkTime(settings.workTime);
+          setRestTime(settings.restTime);
+          setSetsPerExercise(settings.setsPerExercise);
+          setCircuits(settings.circuits);
+          setTimeLeft(settings.workTime);
+        }
 
-          console.log('📞 Making API calls to backend...');
-          const [settingsResponse, exercisesResponse] = await Promise.all([
-            fetch(`${EXPO_BACKEND_URL}/api/settings`),
-            fetch(`${EXPO_BACKEND_URL}/api/exercises`)
-          ]);
+        if (exercisesResponse.ok) {
+          const exercisesData = await exercisesResponse.json();
+          console.log('🏃 Exercises loaded:', exercisesData);
+          setExercises(exercisesData);
+        } else {
+          console.log('⚠️ Using default exercises as fallback');
+          setExercises(EXERCISES);
+        }
 
-          console.log('📊 API responses received:', {
-            settingsOk: settingsResponse.ok,
-            exercisesOk: exercisesResponse.ok
-          });
-
-          if (settingsResponse.ok) {
-            const settings = await settingsResponse.json();
-            console.log('⚙️ Settings loaded:', settings);
-            setWorkTime(settings.workTime);
-            setRestTime(settings.restTime);
-            setSetsPerExercise(settings.setsPerExercise);
-            setCircuits(settings.circuits);
-            setTimeLeft(settings.workTime);
-          }
-
-          if (exercisesResponse.ok) {
-            const exercisesData = await exercisesResponse.json();
-            console.log('🏃 Exercises loaded:', exercisesData);
-            setExercises(exercisesData);
-          } else {
-            console.log('⚠️ Using default exercises as fallback');
-            setExercises(EXERCISES);
-          }
-        })();
-
-        // Race between data loading and timeout
-        await Promise.race([dataPromise, timeoutPromise]);
-
+        // Clear timeout since data loaded successfully
+        clearTimeout(timeout);
+        console.log('✅ Setting loading to false');
+        setLoading(false);
+        
       } catch (error) {
         console.error('❌ Failed to load app data:', error);
+        clearTimeout(timeout);
         setExercises(EXERCISES);
-      } finally {
-        console.log('✅ Setting loading to false');
         setLoading(false);
       }
     };
