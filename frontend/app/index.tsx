@@ -49,12 +49,24 @@ type TimerState = 'ready' | 'work' | 'rest' | 'paused' | 'finished';
 const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exercise, isAnimating }) => {
   const animationValue = useSharedValue(0);
 
-  // Video player setup for push-ups
+  // Video player setup for push-ups - only initialize when needed
   const videoSource = 'https://customer-assets.emergentagent.com/job_move-rest-timer/artifacts/r67nltvu_baloon-push-up.mp4';
-  const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true;
-    player.muted = true;
-  });
+  const [videoPlayer, setVideoPlayer] = useState<any>(null);
+
+  // Initialize video player only for push-ups
+  useEffect(() => {
+    if (exercise === 'Push-ups' && !videoPlayer) {
+      try {
+        const player = useVideoPlayer(videoSource, (player) => {
+          player.loop = true;
+          player.muted = true;
+        });
+        setVideoPlayer(player);
+      } catch (error) {
+        console.log('Video player initialization error:', error);
+      }
+    }
+  }, [exercise]);
 
   useEffect(() => {
     if (isAnimating) {
@@ -73,30 +85,51 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
 
   // Handle video playback for push-ups
   useEffect(() => {
-    if (exercise === 'Push-ups' && player) {
+    if (exercise === 'Push-ups' && videoPlayer) {
       if (isAnimating) {
-        player.play();
+        try {
+          videoPlayer.play();
+        } catch (error) {
+          console.log('Video play error:', error);
+        }
       } else {
-        player.pause();
-        // Reset video to beginning
-        player.seekTo(0);
+        try {
+          videoPlayer.pause();
+          videoPlayer.seekTo(0);
+        } catch (error) {
+          console.log('Video pause error:', error);
+        }
       }
     }
-  }, [isAnimating, exercise, player]);
+  }, [isAnimating, exercise, videoPlayer]);
 
   // For push-ups, show video instead of stick figure
   if (exercise === 'Push-ups') {
     return (
       <View style={styles.stickFigureContainer}>
         <View style={styles.videoContainer}>
-          <VideoView
-            style={styles.exerciseVideo}
-            player={player}
-            allowsFullscreen={false}
-            allowsPictureInPicture={false}
-            contentFit="contain"
-            nativeControls={false}
-          />
+          {videoPlayer ? (
+            <VideoView
+              style={styles.exerciseVideo}
+              player={videoPlayer}
+              allowsFullscreen={false}
+              allowsPictureInPicture={false}
+              contentFit="contain"
+              nativeControls={false}
+            />
+          ) : (
+            // Fallback to stick figure while video loads
+            <View style={styles.exerciseVideo}>
+              <Svg width="120" height="80" viewBox="0 0 120 80">
+                <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
+                <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
+                <Line x1="60" y1="30" x2="40" y2="45" stroke="#fff" strokeWidth="2" />
+                <Line x1="60" y1="30" x2="80" y2="45" stroke="#fff" strokeWidth="2" />
+                <Line x1="60" y1="50" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
+                <Line x1="60" y1="50" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
+              </Svg>
+            </View>
+          )}
         </View>
       </View>
     );
