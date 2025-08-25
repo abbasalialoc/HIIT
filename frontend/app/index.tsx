@@ -139,38 +139,36 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
     );
   }
 
-  // For other exercises, use animated stick figures (only Mountain Climbers now)
+  // For mountain climbers, show your custom balloon mountain climber GIF
+  if (exercise === 'Mountain Climbers') {
+    return (
+      <View style={styles.stickFigureContainer}>
+        <View style={styles.videoContainer}>
+          <Image
+            source={require('../assets/balloon-mountain-climber.gif')}
+            style={styles.exerciseVideo}
+            resizeMode="contain"
+          />
+        </View>
+        <Text style={{color: '#4ecdc4', fontSize: 12, marginTop: 8, fontWeight: '600'}}>
+          🎈 Your Mountain Climber Animation
+        </Text>
+      </View>
+    );
+  }
+
+  // For any other exercises (fallback), use default stick figure  
   const getStickFigureAnimation = () => {
-    switch (exercise) {
-      case 'Mountain Climbers':
-        return (
-          <Animated.View style={[{ transform: [{ translateX: animationValue.value * 10 }] }]}>
-            <Svg width="120" height="80" viewBox="0 0 120 80">
-              {/* Head */}
-              <Circle cx="60" cy="20" r="8" stroke="#fff" strokeWidth="2" fill="none" />
-              {/* Body angled */}
-              <Line x1="60" y1="28" x2="75" y2="45" stroke="#fff" strokeWidth="2" />
-              {/* Arms supporting */}
-              <Line x1="60" y1="32" x2="45" y2="50" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="32" x2="75" y2="50" stroke="#fff" strokeWidth="2" />
-              {/* Running legs */}
-              <Line x1="75" y1="45" x2="65" y2="65" stroke="#fff" strokeWidth="2" />
-              <Line x1="75" y1="45" x2="90" y2="60" stroke="#fff" strokeWidth="2" />
-            </Svg>
-          </Animated.View>
-        );
-      default:
-        return (
-          <Svg width="120" height="80" viewBox="0 0 120 80">
-            <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
-            <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="30" x2="45" y2="40" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="30" x2="75" y2="40" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="50" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
-            <Line x1="60" y1="50" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
-          </Svg>
-        );
-    }
+    return (
+      <Svg width="120" height="80" viewBox="0 0 120 80">
+        <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
+        <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
+        <Line x1="60" y1="30" x2="45" y2="40" stroke="#fff" strokeWidth="2" />
+        <Line x1="60" y1="30" x2="75" y2="40" stroke="#fff" strokeWidth="2" />
+        <Line x1="60" y1="50" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
+        <Line x1="60" y1="50" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
+      </Svg>
+    );
   };
 
   return (
