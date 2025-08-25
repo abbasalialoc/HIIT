@@ -264,61 +264,14 @@ export default function ExerciseTimer() {
     const loadAppData = async () => {
       console.log('🔄 Starting to load app data...');
       
-      // For now, use default data to get the app working
-      console.log('✅ Using default data for reliable app experience');
+      // Skip API calls and use default data immediately
+      console.log('✅ Using default data for immediate mobile experience');
       setExercises(EXERCISES);
-      setLoading(false);
       
-      // TODO: Re-enable backend integration once frontend loading is stable
-      /* Backend integration code temporarily disabled
-      const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-      console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
-      
-      if (!EXPO_BACKEND_URL) {
-        console.log('⚠️ No backend URL found, using default data');
-        setExercises(EXERCISES);
+      // Set loading to false immediately to show the UI
+      setTimeout(() => {
         setLoading(false);
-        return;
-      }
-
-      try {
-        console.log('📞 Making API calls to backend...');
-        const [settingsResponse, exercisesResponse] = await Promise.all([
-          fetch(`${EXPO_BACKEND_URL}/api/settings`),
-          fetch(`${EXPO_BACKEND_URL}/api/exercises`)
-        ]);
-
-        console.log('📊 API responses received:', {
-          settingsOk: settingsResponse.ok,
-          exercisesOk: exercisesResponse.ok
-        });
-
-        if (settingsResponse.ok) {
-          const settings = await settingsResponse.json();
-          console.log('⚙️ Settings loaded:', settings);
-          setWorkTime(settings.workTime);
-          setRestTime(settings.restTime);
-          setSetsPerExercise(settings.setsPerExercise);
-          setCircuits(settings.circuits);
-          setTimeLeft(settings.workTime);
-        }
-
-        if (exercisesResponse.ok) {
-          const exercisesData = await exercisesResponse.json();
-          console.log('🏃 Exercises loaded:', exercisesData);
-          setExercises(exercisesData);
-        } else {
-          console.log('⚠️ Using default exercises as fallback');
-          setExercises(EXERCISES);
-        }
-      } catch (error) {
-        console.error('❌ Failed to load app data:', error);
-        setExercises(EXERCISES);
-      } finally {
-        console.log('✅ Setting loading to false');
-        setLoading(false);
-      }
-      */
+      }, 100); // Small delay to ensure React state updates properly
     };
 
     loadAppData();
