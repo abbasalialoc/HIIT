@@ -103,6 +103,42 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
     );
   }
 
+  // For squats, show your custom balloon squat GIF
+  if (exercise === 'Squats') {
+    return (
+      <View style={styles.stickFigureContainer}>
+        <View style={styles.videoContainer}>
+          <Image
+            source={require('../assets/balloon-squat.gif')}
+            style={styles.exerciseVideo}
+            resizeMode="contain"
+          />
+        </View>
+        <Text style={{color: '#4ecdc4', fontSize: 12, marginTop: 8, fontWeight: '600'}}>
+          🎈 Your Squat Animation
+        </Text>
+      </View>
+    );
+  }
+
+  // For jumping jacks, show your custom balloon jumping jack GIF
+  if (exercise === 'Jumping Jacks') {
+    return (
+      <View style={styles.stickFigureContainer}>
+        <View style={styles.videoContainer}>
+          <Image
+            source={require('../assets/balloon-jumping-jack.gif')}
+            style={styles.exerciseVideo}
+            resizeMode="contain"
+          />
+        </View>
+        <Text style={{color: '#4ecdc4', fontSize: 12, marginTop: 8, fontWeight: '600'}}>
+          🎈 Your Jumping Jack Animation
+        </Text>
+      </View>
+    );
+  }
+
   // For other exercises, use animated stick figures
   const getStickFigureAnimation = () => {
     switch (exercise) {
