@@ -622,6 +622,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20,
   },
+  exerciseVideo: {
+    width: 120,
+    height: 120,
+    borderRadius: 12,
+  },
   timerContainer: {
     marginHorizontal: 20,
     marginVertical: 24,
