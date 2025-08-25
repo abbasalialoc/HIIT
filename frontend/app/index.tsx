@@ -628,10 +628,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20,
   },
+  videoContainer: {
+    backgroundColor: '#2d2d4a',
+    borderRadius: 12,
+    padding: 8,
+    overflow: 'hidden',
+  },
   exerciseVideo: {
     width: 120,
     height: 120,
-    borderRadius: 12,
+    borderRadius: 8,
   },
   timerContainer: {
     marginHorizontal: 20,
