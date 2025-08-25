@@ -418,12 +418,24 @@ export default function ExerciseTimer() {
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Exercise Timer</Text>
-            <TouchableOpacity 
-              style={styles.settingsButton}
-              onPress={() => router.push('/settings')}
-            >
-              <Ionicons name="settings-outline" size={24} color="#fff" />
-            </TouchableOpacity>
+            <View style={styles.headerControls}>
+              <TouchableOpacity 
+                style={styles.soundButton}
+                onPress={() => setSoundEnabled(!soundEnabled)}
+              >
+                <Ionicons 
+                  name={soundEnabled ? "volume-high" : "volume-mute"} 
+                  size={20} 
+                  color={soundEnabled ? "#4ecdc4" : "#a0a0a0"} 
+                />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.settingsButton}
+                onPress={() => router.push('/settings')}
+              >
+                <Ionicons name="settings-outline" size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Workout Progress */}
