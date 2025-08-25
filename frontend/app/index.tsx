@@ -289,7 +289,21 @@ export default function ExerciseTimer() {
     if (timerState === 'work' || timerState === 'rest') {
       intervalRef.current = setInterval(() => {
         setTimeLeft(prev => {
+          // Play countdown beeps for last 3 seconds
+          if (prev <= 3 && prev > 1) {
+            playBeep('countdown');
+            // Enhanced haptic feedback for countdown
+            if (Platform.OS === 'ios') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+          }
+          
           if (prev <= 1) {
+            // Final beep and strong haptic
+            playBeep('final');
+            if (Platform.OS === 'ios') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            }
             handleTimerComplete();
             return 0;
           }
@@ -307,7 +321,7 @@ export default function ExerciseTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState]);
+  }, [timerState, soundEnabled]);
 
   const handleTimerComplete = () => {
     // Haptic feedback
