@@ -156,7 +156,7 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
 };
 
 export default function ExerciseTimer() {
-  // Timer settings
+  // Timer settings (will be loaded from backend)
   const [workTime, setWorkTime] = useState(40); // 40 seconds work
   const [restTime, setRestTime] = useState(20); // 20 seconds rest
   const [setsPerExercise, setSetsPerExercise] = useState(3);
@@ -170,8 +170,56 @@ export default function ExerciseTimer() {
   const [timeLeft, setTimeLeft] = useState(workTime);
   const [exercises, setExercises] = useState(EXERCISES);
 
+  // Loading state
+  const [loading, setLoading] = useState(true);
+
   // Timer reference
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  // Load settings and exercises from backend
+  useEffect(() => {
+    loadSettings();
+    loadExercises();
+  }, []);
+
+  // Update timeLeft when workTime changes
+  useEffect(() => {
+    if (timerState === 'ready') {
+      setTimeLeft(workTime);
+    }
+  }, [workTime, timerState]);
+
+  const loadSettings = async () => {
+    try {
+      const response = await fetch(`${EXPO_BACKEND_URL}/api/settings`);
+      if (response.ok) {
+        const settings = await response.json();
+        setWorkTime(settings.workTime);
+        setRestTime(settings.restTime);
+        setSetsPerExercise(settings.setsPerExercise);
+        setCircuits(settings.circuits);
+        setTimeLeft(settings.workTime);
+      }
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+    }
+  };
+
+  const loadExercises = async () => {
+    try {
+      const response = await fetch(`${EXPO_BACKEND_URL}/api/exercises`);
+      if (response.ok) {
+        const exercisesData = await response.json();
+        setExercises(exercisesData);
+      }
+    } catch (error) {
+      console.error('Failed to load exercises:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get active exercises only
   const activeExercises = exercises.filter(ex => ex.isActive);
