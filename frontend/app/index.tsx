@@ -527,14 +527,14 @@ export default function ExerciseTimer() {
           <View style={styles.controlsContainer}>
             {timerState === 'ready' && (
               <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
-                <Ionicons name="play" size={32} color="#fff" />
+                <Ionicons name="play" size={24} color="#fff" />
                 <Text style={styles.buttonText}>Start Workout</Text>
               </TouchableOpacity>
             )}
 
             {(timerState === 'work' || timerState === 'rest') && (
               <TouchableOpacity style={styles.pauseButton} onPress={pauseWorkout}>
-                <Ionicons name="pause" size={32} color="#fff" />
+                <Ionicons name="pause" size={24} color="#fff" />
                 <Text style={styles.buttonText}>Pause</Text>
               </TouchableOpacity>
             )}
@@ -542,11 +542,11 @@ export default function ExerciseTimer() {
             {timerState === 'paused' && (
               <View style={styles.pausedControls}>
                 <TouchableOpacity style={styles.resumeButton} onPress={resumeWorkout}>
-                  <Ionicons name="play" size={24} color="#fff" />
+                  <Ionicons name="play" size={20} color="#fff" />
                   <Text style={styles.buttonText}>Resume</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
-                  <Ionicons name="refresh" size={24} color="#fff" />
+                  <Ionicons name="refresh" size={20} color="#fff" />
                   <Text style={styles.buttonText}>Reset</Text>
                 </TouchableOpacity>
               </View>
@@ -554,7 +554,7 @@ export default function ExerciseTimer() {
 
             {timerState === 'finished' && (
               <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
-                <Ionicons name="refresh" size={32} color="#fff" />
+                <Ionicons name="refresh" size={24} color="#fff" />
                 <Text style={styles.buttonText}>Start New Workout</Text>
               </TouchableOpacity>
             )}
@@ -574,6 +574,12 @@ export default function ExerciseTimer() {
               <Text style={styles.statValue}>{activeExercises.length}</Text>
               <Text style={styles.statLabel}>Exercises</Text>
             </View>
+          </View>
+
+          {/* Ad Area - Placeholder */}
+          <View style={styles.adContainer}>
+            <Text style={styles.adPlaceholder}>Advertisement Area</Text>
+            <Text style={styles.adSubtext}>320x50 Banner Ad Space</Text>
           </View>
         </>
       )}
