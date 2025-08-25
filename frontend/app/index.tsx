@@ -177,7 +177,65 @@ export default function ExerciseTimer() {
   // Timer reference
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Audio setup
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
   const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  // Initialize audio
+  useEffect(() => {
+    const setupAudio = async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: false,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (error) {
+        console.log('Audio setup error:', error);
+      }
+    };
+    
+    setupAudio();
+  }, []);
+
+  // Play countdown beep
+  const playBeep = async (type: 'countdown' | 'final') => {
+    if (!soundEnabled) return;
+    
+    try {
+      // Create different tones for countdown vs final beep
+      const frequency = type === 'countdown' ? 800 : 1200; // Hz
+      const duration = type === 'countdown' ? 150 : 300; // ms
+      
+      // For web and some platforms, we can use the Web Audio API
+      if (typeof window !== 'undefined' && window.AudioContext) {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration / 1000);
+      }
+    } catch (error) {
+      console.log('Audio playback error:', error);
+      // Fallback to haptic feedback if audio fails
+      if (Platform.OS === 'ios') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    }
+  };
 
   // Load settings and exercises from backend
   useEffect(() => {
