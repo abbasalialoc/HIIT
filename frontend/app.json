@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "description": "Professional exercise timer with animated guides. 40s work, 20s rest intervals with sound cues and customizable workouts.",
     "privacy": "public",
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "splash": {
       "image": "./assets/images/splash-image.png",
       "resizeMode": "contain",
