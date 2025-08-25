@@ -264,16 +264,24 @@ export default function ExerciseTimer() {
   // Load settings and exercises from backend
   useEffect(() => {
     const loadAppData = async () => {
+      console.log('🔄 Starting to load app data...');
       try {
         // Use Promise.all to load both settings and exercises simultaneously
+        console.log('📞 Making API calls to backend...');
         const [settingsResponse, exercisesResponse] = await Promise.all([
           fetch(`${EXPO_BACKEND_URL}/api/settings`),
           fetch(`${EXPO_BACKEND_URL}/api/exercises`)
         ]);
 
+        console.log('📊 API responses received:', {
+          settingsOk: settingsResponse.ok,
+          exercisesOk: exercisesResponse.ok
+        });
+
         // Handle settings
         if (settingsResponse.ok) {
           const settings = await settingsResponse.json();
+          console.log('⚙️ Settings loaded:', settings);
           setWorkTime(settings.workTime);
           setRestTime(settings.restTime);
           setSetsPerExercise(settings.setsPerExercise);
@@ -284,11 +292,13 @@ export default function ExerciseTimer() {
         // Handle exercises
         if (exercisesResponse.ok) {
           const exercisesData = await exercisesResponse.json();
+          console.log('🏃 Exercises loaded:', exercisesData);
           setExercises(exercisesData);
         }
       } catch (error) {
-        console.error('Failed to load app data:', error);
+        console.error('❌ Failed to load app data:', error);
       } finally {
+        console.log('✅ Setting loading to false');
         // Always clear loading state regardless of success/failure
         setLoading(false);
       }
