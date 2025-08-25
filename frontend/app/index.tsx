@@ -89,13 +89,20 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
   if (exercise === 'Push-ups') {
     return (
       <View style={styles.stickFigureContainer}>
-        <View style={styles.videoContainer}>
-          <Image
-            source={require('../assets/push-up-animation.gif')}
-            style={styles.exerciseVideo}
-            resizeMode="contain"
-          />
-        </View>
+        {/* Temporarily use stick figure until GIF loading issue is resolved */}
+        <Animated.View style={[{ transform: [{ translateY: animationValue.value * 20 }] }]}>
+          <Svg width="120" height="80" viewBox="0 0 120 80">
+            <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
+            <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
+            <Line x1="60" y1="30" x2="40" y2="45" stroke="#fff" strokeWidth="2" />
+            <Line x1="60" y1="30" x2="80" y2="45" stroke="#fff" strokeWidth="2" />
+            <Line x1="60" y1="50" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
+            <Line x1="60" y1="50" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
+          </Svg>
+        </Animated.View>
+        <Text style={{color: '#4ecdc4', fontSize: 12, marginTop: 8, fontWeight: '600'}}>
+          🎈 Your Push-up Animation
+        </Text>
       </View>
     );
   }
