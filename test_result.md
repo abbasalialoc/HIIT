@@ -234,14 +234,20 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Exercise Management API"
-    - "Workout Settings API"
     - "Core Timer Functionality"
+    - "Animated Stick Figures"
     - "Settings Screen"
+    - "Mobile UI and Navigation"
+    - "Push-up Video/GIF Integration"
+  stuck_tasks:
+    - "Core Timer Functionality"
+    - "Animated Stick Figures"
+    - "Settings Screen"
+    - "Mobile UI and Navigation"
     - "Backend Integration"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+    - "Push-up Video/GIF Integration"
+  test_all: false
+  test_priority: "stuck_first"
 
   - task: "Push-up Video/GIF Integration"
     implemented: true
