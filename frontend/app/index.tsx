@@ -267,46 +267,39 @@ export default function ExerciseTimer() {
 
   // Load settings and exercises from backend
   useEffect(() => {
-    loadSettings();
-    loadExercises();
+    const loadAppData = async () => {
+      try {
+        // Use Promise.all to load both settings and exercises simultaneously
+        const [settingsResponse, exercisesResponse] = await Promise.all([
+          fetch(`${EXPO_BACKEND_URL}/api/settings`),
+          fetch(`${EXPO_BACKEND_URL}/api/exercises`)
+        ]);
+
+        // Handle settings
+        if (settingsResponse.ok) {
+          const settings = await settingsResponse.json();
+          setWorkTime(settings.workTime);
+          setRestTime(settings.restTime);
+          setSetsPerExercise(settings.setsPerExercise);
+          setCircuits(settings.circuits);
+          setTimeLeft(settings.workTime);
+        }
+
+        // Handle exercises
+        if (exercisesResponse.ok) {
+          const exercisesData = await exercisesResponse.json();
+          setExercises(exercisesData);
+        }
+      } catch (error) {
+        console.error('Failed to load app data:', error);
+      } finally {
+        // Always clear loading state regardless of success/failure
+        setLoading(false);
+      }
+    };
+
+    loadAppData();
   }, []);
-
-  // Update timeLeft when workTime changes
-  useEffect(() => {
-    if (timerState === 'ready') {
-      setTimeLeft(workTime);
-    }
-  }, [workTime, timerState]);
-
-  const loadSettings = async () => {
-    try {
-      const response = await fetch(`${EXPO_BACKEND_URL}/api/settings`);
-      if (response.ok) {
-        const settings = await response.json();
-        setWorkTime(settings.workTime);
-        setRestTime(settings.restTime);
-        setSetsPerExercise(settings.setsPerExercise);
-        setCircuits(settings.circuits);
-        setTimeLeft(settings.workTime);
-      }
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-    }
-  };
-
-  const loadExercises = async () => {
-    try {
-      const response = await fetch(`${EXPO_BACKEND_URL}/api/exercises`);
-      if (response.ok) {
-        const exercisesData = await response.json();
-        setExercises(exercisesData);
-      }
-    } catch (error) {
-      console.error('Failed to load exercises:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Get active exercises only
   const activeExercises = exercises.filter(ex => ex.isActive);
