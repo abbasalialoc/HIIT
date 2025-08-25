@@ -324,11 +324,7 @@ export default function ExerciseTimer() {
   }, [timerState, soundEnabled]);
 
   const handleTimerComplete = () => {
-    // Haptic feedback
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-
+    // Timer complete logic (haptic feedback and sound handled in timer loop)
     if (timerState === 'work') {
       // Work period completed, start rest
       setTimerState('rest');
