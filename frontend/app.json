@@ -12,7 +12,7 @@
     "privacy": "public",
     "platforms": ["ios", "android"],
     "splash": {
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/images/splash-image.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a2e"
     },
