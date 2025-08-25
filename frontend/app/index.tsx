@@ -139,45 +139,9 @@ const StickFigure: React.FC<{ exercise: string; isAnimating: boolean }> = ({ exe
     );
   }
 
-  // For other exercises, use animated stick figures
+  // For other exercises, use animated stick figures (only Mountain Climbers now)
   const getStickFigureAnimation = () => {
     switch (exercise) {
-      case 'Squats':
-        return (
-          <Animated.View style={[{ transform: [{ translateY: animationValue.value * 30 }] }]}>
-            <Svg width="120" height="80" viewBox="0 0 120 80">
-              {/* Head */}
-              <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
-              {/* Body */}
-              <Line x1="60" y1="23" x2="60" y2="45" stroke="#fff" strokeWidth="2" />
-              {/* Arms */}
-              <Line x1="60" y1="25" x2="45" y2="35" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="25" x2="75" y2="35" stroke="#fff" strokeWidth="2" />
-              {/* Legs bent */}
-              <Line x1="60" y1="45" x2="50" y2="60" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="45" x2="70" y2="60" stroke="#fff" strokeWidth="2" />
-              <Line x1="50" y1="60" x2="45" y2="70" stroke="#fff" strokeWidth="2" />
-              <Line x1="70" y1="60" x2="75" y2="70" stroke="#fff" strokeWidth="2" />
-            </Svg>
-          </Animated.View>
-        );
-      case 'Jumping Jacks':
-        return (
-          <Animated.View style={[{ transform: [{ rotate: `${animationValue.value * 15}deg` }] }]}>
-            <Svg width="120" height="80" viewBox="0 0 120 80">
-              {/* Head */}
-              <Circle cx="60" cy="15" r="8" stroke="#fff" strokeWidth="2" fill="none" />
-              {/* Body */}
-              <Line x1="60" y1="23" x2="60" y2="50" stroke="#fff" strokeWidth="2" />
-              {/* Arms spread */}
-              <Line x1="60" y1="30" x2="35" y2="25" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="30" x2="85" y2="25" stroke="#fff" strokeWidth="2" />
-              {/* Legs spread */}
-              <Line x1="60" y1="50" x2="40" y2="70" stroke="#fff" strokeWidth="2" />
-              <Line x1="60" y1="50" x2="80" y2="70" stroke="#fff" strokeWidth="2" />
-            </Svg>
-          </Animated.View>
-        );
       case 'Mountain Climbers':
         return (
           <Animated.View style={[{ transform: [{ translateX: animationValue.value * 10 }] }]}>
