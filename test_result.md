@@ -245,15 +245,18 @@ test_plan:
 
   - task: "Push-up Video/GIF Integration"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/app/index.tsx, /app/frontend/assets/push-up-animation.gif"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "User reported gray box issue with video. Converted MP4 to optimized GIF (544KB, 120x120px, 12fps). GIF created successfully but app stuck on 'Loading workout...' screen. Need to resolve frontend loading issue to integrate GIF."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL: Push-up GIF integration cannot be tested due to React Native Web failure. App doesn't render in browser - shows Expo manifest instead of UI. GIF asset exists but is inaccessible due to web bundling problems. Root cause is React version compatibility with Expo web."
 
 agent_communication:
   - agent: "main"
