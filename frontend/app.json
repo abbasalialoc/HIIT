@@ -1,61 +1,36 @@
 {
   "expo": {
-    "name": "Simple HIIT - Workout Timer",
+    "name": "Simple HIIT",
     "slug": "simple-hiit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "simple-hiit",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
-    "description": "Simple HIIT workout timer with animated exercise guides. Perfect for high-intensity interval training with customizable work/rest periods.",
-    "privacy": "public",
-    "platforms": ["ios", "android", "web"],
-    "keywords": ["hiit", "workout", "timer", "exercise", "fitness", "interval", "training"],
-    "category": "health-fitness",
     "splash": {
       "image": "./assets/images/splash-image.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a2e"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.simplehiit.app",
-      "buildNumber": "1",
-      "icon": "./assets/images/icon.png",
-      "infoPlist": {
-        "NSHealthShareUsageDescription": "This app helps you track HIIT workout sessions.",
-        "NSHealthUpdateUsageDescription": "This app helps you track HIIT workout sessions."
-      }
+      "bundleIdentifier": "com.simplehiit.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
       },
-      "package": "com.simplehiit.app",
-      "versionCode": 1,
-      "permissions": [
-        "android.permission.VIBRATE"
-      ],
-      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.simplehiit.app"
+      "package": "com.simplehiit.app"
     },
     "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
-      "expo-splash-screen"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "eas": {
-        "projectId": "your-project-id-here"
-      }
-    }
+      "expo-router"
+    ]
   }
 }
