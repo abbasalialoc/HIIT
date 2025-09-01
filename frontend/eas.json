@@ -3,40 +3,9 @@
     "version": ">= 5.0.0"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
     "production": {
       "android": {
-        "buildType": "aab",
-        "autoIncrement": "versionCode"
-      },
-      "ios": {
-        "autoIncrement": "buildNumber"
-      }
-    }
-  },
-  "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "./google-service-account-key.json",
-        "track": "production",
-        "releaseStatus": "completed"
-      },
-      "ios": {
-        "appleId": "your-apple-id@email.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "ABCDE12345"
+        "buildType": "aab"
       }
     }
   }
