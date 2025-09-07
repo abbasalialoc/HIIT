@@ -2,7 +2,7 @@
   "expo": {
     "name": "Simple HIIT",
     "slug": "simple-hiit",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "dark",
@@ -16,14 +16,16 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.simplehiit.app"
+      "bundleIdentifier": "com.simplehiit.app",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
       },
-      "package": "com.simplehiit.app"
+      "package": "com.simplehiit.app",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/images/favicon.png",
