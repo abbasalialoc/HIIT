@@ -200,10 +200,11 @@ export default function ExerciseTimer() {
   // Timer reference
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Audio setup
+  // Audio setup and sound functions
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundObjects, setSoundObjects] = useState<{ [key: string]: Audio.Sound }>({});
 
-  // Initialize audio
+  // Initialize audio and create sound objects
   useEffect(() => {
     const setupAudio = async () => {
       try {
@@ -214,46 +215,59 @@ export default function ExerciseTimer() {
           shouldDuckAndroid: true,
           playThroughEarpieceAndroid: false,
         });
+
+        // Create simple beep sounds using expo-av Sound
+        // We'll create the sounds dynamically when needed
+        console.log('Audio setup complete');
       } catch (error) {
         console.log('Audio setup error:', error);
       }
     };
     
     setupAudio();
+
+    // Cleanup sounds on unmount
+    return () => {
+      Object.values(soundObjects).forEach(sound => {
+        sound.unloadAsync().catch(() => {});
+      });
+    };
   }, []);
 
-  // Play countdown beep
+  // Play countdown beep using expo-av
   const playBeep = async (type: 'countdown' | 'final') => {
     if (!soundEnabled) return;
     
     try {
-      // Create different tones for countdown vs final beep
-      const frequency = type === 'countdown' ? 800 : 1200; // Hz
-      const duration = type === 'countdown' ? 150 : 300; // ms
-      
-      // For web and some platforms, we can use the Web Audio API
-      if (typeof window !== 'undefined' && window.AudioContext) {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration / 1000);
-      }
+      // Use a simple beep sound or create one programmatically
+      const { sound } = await Audio.Sound.createAsync(
+        // For now, we'll use a data URI for a simple beep tone
+        // This creates a short beep sound
+        { 
+          uri: type === 'countdown' 
+            ? 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjmNz/LReywEJHPE8+KSQA='
+            : 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjmNz/LReywEJHPE8+KSQA='
+        }
+      );
+
+      await sound.playAsync();
+
+      // Clean up the sound after playing
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+
     } catch (error) {
       console.log('Audio playback error:', error);
       // Fallback to haptic feedback if audio fails
       if (Platform.OS === 'ios') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        Haptics.impactAsync(
+          type === 'countdown' 
+            ? Haptics.ImpactFeedbackStyle.Light 
+            : Haptics.ImpactFeedbackStyle.Heavy
+        );
       }
     }
   };
