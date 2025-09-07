@@ -91,19 +91,27 @@ export default function Settings() {
         exerciseOrder
       };
 
-      const response = await fetch(`${EXPO_BACKEND_URL}/api/settings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(settingsData),
-      });
-
-      if (response.ok) {
-        Alert.alert('Success', 'Settings saved successfully!');
-      } else {
-        throw new Error('Failed to save settings');
+      // Always save to local storage first (works offline)
+      await AsyncStorage.setItem('workoutSettings', JSON.stringify(settingsData));
+      
+      // Try to save to backend if available, but don't fail if it's not
+      const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+      if (EXPO_BACKEND_URL) {
+        try {
+          const response = await fetch(`${EXPO_BACKEND_URL}/api/settings`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(settingsData),
+          });
+          console.log('Backend save attempt:', response.ok ? 'success' : 'failed');
+        } catch (error) {
+          console.log('Backend not available, using local storage only');
+        }
       }
+
+      Alert.alert('Success', 'Settings saved successfully!');
     } catch (error) {
       Alert.alert('Error', 'Failed to save settings. Please try again.');
       console.error('Save settings error:', error);
