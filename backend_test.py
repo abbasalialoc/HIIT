@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://move-rest-timer.preview.emergentagent.com/api"
+BACKEND_URL = "https://simple-hiit-timer.preview.emergentagent.com/api"
 
 class ExerciseTimerAPITester:
     def __init__(self):
