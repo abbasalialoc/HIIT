@@ -31,7 +31,8 @@
     },
     "plugins": [
       "expo-router",
-      "@react-native-async-storage/async-storage"
+      "@react-native-async-storage/async-storage",
+      "expo-audio"
     ],
     "extra": {
       "eas": {
