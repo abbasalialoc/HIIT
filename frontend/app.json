@@ -30,9 +30,7 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
-      "@react-native-async-storage/async-storage",
-      "expo-audio"
+      "expo-router"
     ],
     "extra": {
       "eas": {
