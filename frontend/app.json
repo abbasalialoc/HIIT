@@ -14,10 +14,18 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.simplehiit.app",
-      "buildNumber": "2"
+      "buildNumber": "2",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -28,19 +36,37 @@
       "versionCode": 2,
       "permissions": [
         "android.permission.VIBRATE"
-      ]
+      ],
+      "config": {
+        "usesCleartextTraffic": false
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-audio",
+      "react-native-get-random-values",
+      "react-native-reanimated",
+      "react-native-safe-area-context",
+      "@react-native-async-storage/async-storage"
     ],
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
       "eas": {
         "projectId": "12345678-1234-1234-1234-123456789abc"
       }
+    },
+    "owner": "anonymous",
+    "updates": {
+      "url": "https://u.expo.dev/12345678-1234-1234-1234-123456789abc"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
