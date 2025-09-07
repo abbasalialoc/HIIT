@@ -551,10 +551,16 @@ export default function ExerciseTimer() {
             )}
 
             {(timerState === 'work' || timerState === 'rest') && (
-              <TouchableOpacity style={styles.pauseButton} onPress={pauseWorkout}>
-                <Ionicons name="pause" size={24} color="#fff" />
-                <Text style={styles.buttonText}>Pause</Text>
-              </TouchableOpacity>
+              <View style={styles.activeControls}>
+                <TouchableOpacity style={styles.pauseButton} onPress={pauseWorkout}>
+                  <Ionicons name="pause" size={24} color="#fff" />
+                  <Text style={styles.buttonText}>Pause</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.skipButton} onPress={skipToNext}>
+                  <Ionicons name="play-forward" size={20} color="#fff" />
+                  <Text style={styles.buttonText}>Skip</Text>
+                </TouchableOpacity>
+              </View>
             )}
 
             {timerState === 'paused' && (
