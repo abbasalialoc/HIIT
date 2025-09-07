@@ -538,6 +538,16 @@ export default function ExerciseTimer() {
             <View style={styles.headerControls}>
               <TouchableOpacity 
                 style={styles.soundButton}
+                onPress={async () => {
+                  console.log('🔊 Testing sound manually...');
+                  await playBeep('countdown');
+                  setTimeout(() => playBeep('final'), 1000);
+                }}
+              >
+                <Text style={{color: '#4ecdc4', fontSize: 10}}>TEST</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.soundButton}
                 onPress={() => setSoundEnabled(!soundEnabled)}
               >
                 <Ionicons 
