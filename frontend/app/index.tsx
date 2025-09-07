@@ -272,69 +272,33 @@ export default function ExerciseTimer() {
     }
   };
 
-  // Load settings and exercises from backend  
+  // Load settings and exercises from local storage/backend
   useEffect(() => {
     const loadAppData = async () => {
       console.log('🔄 Starting to load app data...');
       
-      // Set a 1-second timeout to ensure loading always completes quickly
-      const timeout = setTimeout(() => {
-        console.log('⏰ Fast loading timeout - ensuring app loads');
-        setExercises(EXERCISES);
-        setLoading(false);
-      }, 1000); // 1 second timeout for immediate loading
-      
       try {
-        const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-        console.log('🌐 Backend URL:', EXPO_BACKEND_URL);
-        
-        if (!EXPO_BACKEND_URL) {
-          console.log('⚠️ No backend URL found, using default data');
-          clearTimeout(timeout);
-          setExercises(EXERCISES);
-          setLoading(false);
-          return;
+        // Load settings from local storage first
+        const savedSettings = await AsyncStorage.getItem('workoutSettings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          setWorkTime(settings.workTime || 40);
+          setRestTime(settings.restTime || 20);
+          setSetsPerExercise(settings.setsPerExercise || 3);
+          setCircuits(settings.circuits || 2);
+          setTimeLeft(settings.workTime || 40);
+          console.log('⚙️ Settings loaded from local storage');
         }
 
-        console.log('📞 Making API calls to backend...');
-        const [settingsResponse, exercisesResponse] = await Promise.all([
-          fetch(`${EXPO_BACKEND_URL}/api/settings`),
-          fetch(`${EXPO_BACKEND_URL}/api/exercises`)
-        ]);
-
-        console.log('📊 API responses received:', {
-          settingsOk: settingsResponse.ok,
-          exercisesOk: exercisesResponse.ok
-        });
-
-        if (settingsResponse.ok) {
-          const settings = await settingsResponse.json();
-          console.log('⚙️ Settings loaded:', settings);
-          setWorkTime(settings.workTime);
-          setRestTime(settings.restTime);
-          setSetsPerExercise(settings.setsPerExercise);
-          setCircuits(settings.circuits);
-          setTimeLeft(settings.workTime);
-        }
-
-        if (exercisesResponse.ok) {
-          const exercisesData = await exercisesResponse.json();
-          console.log('🏃 Exercises loaded:', exercisesData);
-          setExercises(exercisesData);
-        } else {
-          console.log('⚠️ Using default exercises as fallback');
-          setExercises(EXERCISES);
-        }
-
-        // Clear timeout since data loaded successfully
-        clearTimeout(timeout);
-        console.log('✅ Setting loading to false');
-        setLoading(false);
+        // Always use default exercises (no backend dependency for exercises in mobile)
+        setExercises(EXERCISES);
+        console.log('🏃 Using default exercises');
         
       } catch (error) {
         console.error('❌ Failed to load app data:', error);
-        clearTimeout(timeout);
         setExercises(EXERCISES);
+      } finally {
+        console.log('✅ Setting loading to false');
         setLoading(false);
       }
     };
