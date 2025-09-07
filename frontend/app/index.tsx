@@ -436,6 +436,14 @@ export default function ExerciseTimer() {
     }
   };
 
+  const resetWorkout = () => {
+    setTimerState('ready');
+    setCurrentExerciseIndex(0);
+    setCurrentSet(1);
+    setCurrentCircuit(1);
+    setTimeLeft(workTime);
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
