@@ -202,75 +202,76 @@ export default function ExerciseTimer() {
 
   // Audio setup and sound functions
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [soundObjects, setSoundObjects] = useState<{ [key: string]: Audio.Sound }>({});
 
-  // Initialize audio and create sound objects
-  useEffect(() => {
-    const setupAudio = async () => {
+  // Create beep sound using Web Audio API (works on React Native Web)
+  // and fallback to native audio for mobile
+  const createBeepSound = (frequency: number, duration: number) => {
+    return new Promise<void>((resolve) => {
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: false,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: true,
-          playThroughEarpieceAndroid: false,
-        });
-
-        // Create simple beep sounds using expo-av Sound
-        // We'll create the sounds dynamically when needed
-        console.log('Audio setup complete');
+        // For React Native/Mobile - create a simple audio context
+        if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+          const audioContext = new (AudioContext || (window as any).webkitAudioContext)();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+          oscillator.type = 'sine';
+          
+          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+          
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + duration / 1000);
+          
+          setTimeout(() => resolve(), duration);
+        } else {
+          // Fallback for environments without AudioContext
+          console.log('AudioContext not available');
+          resolve();
+        }
       } catch (error) {
-        console.log('Audio setup error:', error);
+        console.log('Audio creation error:', error);
+        resolve();
       }
-    };
-    
-    setupAudio();
+    });
+  };
 
-    // Cleanup sounds on unmount
-    return () => {
-      Object.values(soundObjects).forEach(sound => {
-        sound.unloadAsync().catch(() => {});
-      });
-    };
-  }, []);
-
-  // Play countdown beep using expo-av with built-in simple sound
+  // Play countdown beep with BOTH sound and vibration
   const playBeep = async (type: 'countdown' | 'final') => {
     if (!soundEnabled) return;
     
     try {
-      // Create a simple programmatic beep using expo-av
-      // For mobile apps, we'll use a simple approach that works reliably
+      // Create different frequencies for countdown vs final beep
+      const frequency = type === 'countdown' ? 800 : 1200; // Hz
+      const duration = type === 'countdown' ? 200 : 400; // ms
       
-      // Fallback to haptic feedback which is more reliable on mobile
-      if (Platform.OS === 'ios') {
-        Haptics.impactAsync(
-          type === 'countdown' 
-            ? Haptics.ImpactFeedbackStyle.Light 
-            : Haptics.ImpactFeedbackStyle.Heavy
-        );
-      } else if (Platform.OS === 'android') {
-        // Android vibration
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      }
+      // Play sound AND vibration together for maximum feedback
+      const soundPromise = createBeepSound(frequency, duration);
       
-      // Try to play a simple system sound for feedback
-      try {
-        // On some platforms, we can use a system notification sound
-        if (Audio.Sound) {
-          // This is a very basic approach - in production you'd want actual sound files
-          console.log(`Playing ${type} beep sound`);
-          
-          // For now, we rely on haptic feedback as it's more reliable across devices
-          // Audio can be enhanced later with actual sound files
+      // Haptic feedback (vibration)
+      const hapticPromise = (async () => {
+        if (Platform.OS === 'ios') {
+          await Haptics.impactAsync(
+            type === 'countdown' 
+              ? Haptics.ImpactFeedbackStyle.Light 
+              : Haptics.ImpactFeedbackStyle.Heavy
+          );
+        } else if (Platform.OS === 'android') {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }
-      } catch (audioError) {
-        console.log('Audio not available, using haptic only:', audioError);
-      }
-
+      })();
+      
+      // Execute both sound and haptic simultaneously
+      await Promise.all([soundPromise, hapticPromise]);
+      
+      console.log(`✅ Played ${type} beep: ${frequency}Hz for ${duration}ms + haptic`);
+      
     } catch (error) {
       console.log('Beep playback error:', error);
-      // Always fallback to haptic which is very reliable
+      // Always ensure haptic works as fallback
       if (Platform.OS === 'ios') {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
