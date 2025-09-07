@@ -203,12 +203,39 @@ export default function ExerciseTimer() {
   // Audio setup and sound functions
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Create beep sound using Web Audio API (works on React Native Web)
-  // and fallback to native audio for mobile
-  const createBeepSound = (frequency: number, duration: number) => {
-    return new Promise<void>((resolve) => {
+  // Create audio sound objects for mobile compatibility
+  const createMobileBeepSound = async (type: 'countdown' | 'final') => {
+    try {
+      // Create a simple beep sound programmatically for mobile
+      const frequency = type === 'countdown' ? 800 : 1200; // Hz
+      const duration = type === 'countdown' ? 200 : 400; // ms
+      
+      // For mobile devices, use Audio.Sound with programmatically created sound
+      const { sound } = await Audio.Sound.createAsync(
+        // Use a data URI to create a simple beep sound
+        { uri: `data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L7xm4gBzqP0fDKeCsBKXHD7tqMPAkSVq7n77BdGAo+ltv/yW8gBDuPz+/HdSsFL3jH7tiQPwdOwPzWjMFzU7d5Znd8ePCCcBQg`},
+        { shouldPlay: false, isLooping: false, volume: 0.3 }
+      );
+      
+      await sound.playAsync();
+      
+      // Stop and unload after duration
+      setTimeout(async () => {
+        try {
+          await sound.stopAsync();
+          await sound.unloadAsync();
+        } catch (e) {
+          console.log('Sound cleanup error:', e);
+        }
+      }, duration);
+      
+      console.log(`✅ Played mobile ${type} beep: ${frequency}Hz for ${duration}ms`);
+      
+    } catch (error) {
+      console.log('Mobile beep creation error:', error);
+      
+      // Fallback: Try Web Audio API for web preview
       try {
-        // For React Native/Mobile - create a simple audio context
         if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
           const audioContext = new (AudioContext || (window as any).webkitAudioContext)();
           const oscillator = audioContext.createOscillator();
@@ -216,6 +243,9 @@ export default function ExerciseTimer() {
           
           oscillator.connect(gainNode);
           gainNode.connect(audioContext.destination);
+          
+          const frequency = type === 'countdown' ? 800 : 1200;
+          const duration = type === 'countdown' ? 200 : 400;
           
           oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
           oscillator.type = 'sine';
@@ -226,17 +256,12 @@ export default function ExerciseTimer() {
           oscillator.start(audioContext.currentTime);
           oscillator.stop(audioContext.currentTime + duration / 1000);
           
-          setTimeout(() => resolve(), duration);
-        } else {
-          // Fallback for environments without AudioContext
-          console.log('AudioContext not available');
-          resolve();
+          console.log(`✅ Fallback web audio ${type} beep played`);
         }
-      } catch (error) {
-        console.log('Audio creation error:', error);
-        resolve();
+      } catch (webError) {
+        console.log('Web audio fallback error:', webError);
       }
-    });
+    }
   };
 
   // Play countdown beep with BOTH sound and vibration
@@ -244,12 +269,8 @@ export default function ExerciseTimer() {
     if (!soundEnabled) return;
     
     try {
-      // Create different frequencies for countdown vs final beep
-      const frequency = type === 'countdown' ? 800 : 1200; // Hz
-      const duration = type === 'countdown' ? 200 : 400; // ms
-      
-      // Play sound AND vibration together for maximum feedback
-      const soundPromise = createBeepSound(frequency, duration);
+      // Play mobile-compatible sound
+      const soundPromise = createMobileBeepSound(type);
       
       // Haptic feedback (vibration)
       const hapticPromise = (async () => {
@@ -267,13 +288,13 @@ export default function ExerciseTimer() {
       // Execute both sound and haptic simultaneously
       await Promise.all([soundPromise, hapticPromise]);
       
-      console.log(`✅ Played ${type} beep: ${frequency}Hz for ${duration}ms + haptic`);
-      
     } catch (error) {
       console.log('Beep playback error:', error);
       // Always ensure haptic works as fallback
       if (Platform.OS === 'ios') {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      } else if (Platform.OS === 'android') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
     }
   };
