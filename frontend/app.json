@@ -49,6 +49,12 @@
       "expo-router",
       [
         "expo-font"
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": false
+        }
       ]
     ],
     "experiments": {
