@@ -203,39 +203,93 @@ export default function ExerciseTimer() {
   // Audio setup and sound functions
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Create audio sound objects for mobile compatibility
+  // Set up audio mode for better mobile compatibility
+  useEffect(() => {
+    const setupAudio = async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: false,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+        console.log('✅ Audio mode configured for mobile');
+      } catch (error) {
+        console.log('Audio setup error:', error);
+      }
+    };
+    setupAudio();
+  }, []);
+
+  // Create mobile-compatible beep sound
   const createMobileBeepSound = async (type: 'countdown' | 'final') => {
     try {
-      // Create a simple beep sound programmatically for mobile
-      const frequency = type === 'countdown' ? 800 : 1200; // Hz
-      const duration = type === 'countdown' ? 200 : 400; // ms
-      
-      // For mobile devices, use Audio.Sound with programmatically created sound
-      const { sound } = await Audio.Sound.createAsync(
-        // Use a data URI to create a simple beep sound
-        { uri: `data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L7xm4gBzqP0fDKeCsBKXHD7tqMPAkSVq7n77BdGAo+ltv/yW8gBDuPz+/HdSsFL3jH7tiQPwdOwPzWjMFzU7d5Znd8ePCCcBQg`},
-        { shouldPlay: false, isLooping: false, volume: 0.3 }
-      );
-      
-      await sound.playAsync();
-      
-      // Stop and unload after duration
-      setTimeout(async () => {
-        try {
-          await sound.stopAsync();
-          await sound.unloadAsync();
-        } catch (e) {
-          console.log('Sound cleanup error:', e);
-        }
-      }, duration);
-      
-      console.log(`✅ Played mobile ${type} beep: ${frequency}Hz for ${duration}ms`);
-      
-    } catch (error) {
-      console.log('Mobile beep creation error:', error);
-      
-      // Fallback: Try Web Audio API for web preview
-      try {
+      // Use a simple approach with notification sound on mobile
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
+        // For mobile devices, create a simple tone
+        const frequency = type === 'countdown' ? 800 : 1200;
+        const duration_ms = type === 'countdown' ? 200 : 400;
+        
+        // Generate a simple WAV file data URI for beep sound
+        const generateBeepDataUri = (freq: number, duration: number) => {
+          const sampleRate = 8000;
+          const samples = Math.floor(sampleRate * duration / 1000);
+          const buffer = new ArrayBuffer(44 + samples * 2);
+          const view = new DataView(buffer);
+          
+          // WAV header
+          const writeString = (offset: number, string: string) => {
+            for (let i = 0; i < string.length; i++) {
+              view.setUint8(offset + i, string.charCodeAt(i));
+            }
+          };
+          
+          writeString(0, 'RIFF');
+          view.setUint32(4, 36 + samples * 2, true);
+          writeString(8, 'WAVE');
+          writeString(12, 'fmt ');
+          view.setUint32(16, 16, true);
+          view.setUint16(20, 1, true);
+          view.setUint16(22, 1, true);
+          view.setUint32(24, sampleRate, true);
+          view.setUint32(28, sampleRate * 2, true);
+          view.setUint16(32, 2, true);
+          view.setUint16(34, 16, true);
+          writeString(36, 'data');
+          view.setUint32(40, samples * 2, true);
+          
+          // Generate sine wave
+          for (let i = 0; i < samples; i++) {
+            const sample = Math.sin(2 * Math.PI * freq * i / sampleRate) * 0.3 * 32767;
+            view.setInt16(44 + i * 2, sample, true);
+          }
+          
+          const blob = new Blob([buffer], { type: 'audio/wav' });
+          return URL.createObjectURL(blob);
+        };
+        
+        const audioUri = generateBeepDataUri(frequency, duration_ms);
+        
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: audioUri },
+          { shouldPlay: true, volume: 0.5 }
+        );
+        
+        // Clean up after playing
+        setTimeout(async () => {
+          try {
+            await sound.unloadAsync();
+            URL.revokeObjectURL(audioUri);
+          } catch (e) {
+            console.log('Sound cleanup error:', e);
+          }
+        }, duration_ms + 100);
+        
+        console.log(`✅ Mobile ${type} beep played: ${frequency}Hz`);
+        
+      } else {
+        // Fallback for web preview
         if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
           const audioContext = new (AudioContext || (window as any).webkitAudioContext)();
           const oscillator = audioContext.createOscillator();
@@ -256,17 +310,20 @@ export default function ExerciseTimer() {
           oscillator.start(audioContext.currentTime);
           oscillator.stop(audioContext.currentTime + duration / 1000);
           
-          console.log(`✅ Fallback web audio ${type} beep played`);
+          console.log(`✅ Web ${type} beep played`);
         }
-      } catch (webError) {
-        console.log('Web audio fallback error:', webError);
       }
+      
+    } catch (error) {
+      console.log('Mobile beep creation error:', error);
     }
   };
 
   // Play countdown beep with BOTH sound and vibration
   const playBeep = async (type: 'countdown' | 'final') => {
     if (!soundEnabled) return;
+    
+    console.log(`🔊 Attempting to play ${type} beep (sound enabled: ${soundEnabled})`);
     
     try {
       // Play mobile-compatible sound
