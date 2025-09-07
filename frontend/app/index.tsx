@@ -413,12 +413,27 @@ export default function ExerciseTimer() {
     setTimerState(timerState === 'work' ? 'work' : 'rest');
   };
 
-  const resetWorkout = () => {
-    setTimerState('ready');
-    setCurrentExerciseIndex(0);
-    setCurrentSet(1);
-    setCurrentCircuit(1);
-    setTimeLeft(workTime);
+  const skipToNext = () => {
+    // Clear current timer
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    if (timerState === 'work') {
+      // Skip work period, go to rest
+      setTimerState('rest');
+      setTimeLeft(restTime);
+      console.log('⏭️ Skipped work period, starting rest');
+    } else if (timerState === 'rest') {
+      // Skip rest period, move to next stage (set/exercise/circuit)
+      moveToNext();
+      console.log('⏭️ Skipped rest period, moving to next stage');
+    }
+    
+    // Provide haptic feedback for skip action
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
   };
 
   const formatTime = (seconds: number) => {
