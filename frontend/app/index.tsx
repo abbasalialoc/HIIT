@@ -222,100 +222,77 @@ export default function ExerciseTimer() {
     setupAudio();
   }, []);
 
-  // Create mobile-compatible beep sound
+  // Create mobile-compatible beep sound using actual audio files
   const createMobileBeepSound = async (type: 'countdown' | 'final') => {
     try {
-      // Use a simple approach with notification sound on mobile
-      if (Platform.OS === 'ios' || Platform.OS === 'android') {
-        // For mobile devices, create a simple tone
-        const frequency = type === 'countdown' ? 800 : 1200;
-        const duration_ms = type === 'countdown' ? 200 : 400;
-        
-        // Generate a simple WAV file data URI for beep sound
-        const generateBeepDataUri = (freq: number, duration: number) => {
-          const sampleRate = 8000;
-          const samples = Math.floor(sampleRate * duration / 1000);
-          const buffer = new ArrayBuffer(44 + samples * 2);
-          const view = new DataView(buffer);
-          
-          // WAV header
-          const writeString = (offset: number, string: string) => {
-            for (let i = 0; i < string.length; i++) {
-              view.setUint8(offset + i, string.charCodeAt(i));
-            }
-          };
-          
-          writeString(0, 'RIFF');
-          view.setUint32(4, 36 + samples * 2, true);
-          writeString(8, 'WAVE');
-          writeString(12, 'fmt ');
-          view.setUint32(16, 16, true);
-          view.setUint16(20, 1, true);
-          view.setUint16(22, 1, true);
-          view.setUint32(24, sampleRate, true);
-          view.setUint32(28, sampleRate * 2, true);
-          view.setUint16(32, 2, true);
-          view.setUint16(34, 16, true);
-          writeString(36, 'data');
-          view.setUint32(40, samples * 2, true);
-          
-          // Generate sine wave
-          for (let i = 0; i < samples; i++) {
-            const sample = Math.sin(2 * Math.PI * freq * i / sampleRate) * 0.3 * 32767;
-            view.setInt16(44 + i * 2, sample, true);
-          }
-          
-          const blob = new Blob([buffer], { type: 'audio/wav' });
-          return URL.createObjectURL(blob);
-        };
-        
-        const audioUri = generateBeepDataUri(frequency, duration_ms);
-        
-        const { sound } = await Audio.Sound.createAsync(
-          { uri: audioUri },
-          { shouldPlay: true, volume: 0.5 }
-        );
-        
-        // Clean up after playing
-        setTimeout(async () => {
-          try {
-            await sound.unloadAsync();
-            URL.revokeObjectURL(audioUri);
-          } catch (e) {
-            console.log('Sound cleanup error:', e);
-          }
-        }, duration_ms + 100);
-        
-        console.log(`✅ Mobile ${type} beep played: ${frequency}Hz`);
-        
-      } else {
-        // Fallback for web preview
-        if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
-          const audioContext = new (AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          const frequency = type === 'countdown' ? 800 : 1200;
-          const duration = type === 'countdown' ? 200 : 400;
-          
-          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-          oscillator.type = 'sine';
-          
-          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-          
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + duration / 1000);
-          
-          console.log(`✅ Web ${type} beep played`);
+      console.log(`🎵 Loading ${type} sound file...`);
+      
+      // Use actual sound files for reliable mobile playback
+      const soundFile = type === 'countdown' 
+        ? require('../assets/sounds/countdown.wav')
+        : require('../assets/sounds/final.wav');
+      
+      console.log(`📁 Sound file loaded: ${type}`);
+      
+      // Create sound instance with the file
+      const { sound } = await Audio.Sound.createAsync(
+        soundFile,
+        { 
+          shouldPlay: true, 
+          volume: 0.7,
+          isLooping: false 
         }
-      }
+      );
+      
+      console.log(`🔊 Playing ${type} sound...`);
+      
+      // Set a timeout to unload the sound after it finishes
+      const duration = type === 'countdown' ? 300 : 500; // Give extra time for playback
+      setTimeout(async () => {
+        try {
+          await sound.unloadAsync();
+          console.log(`🗑️ ${type} sound unloaded`);
+        } catch (e) {
+          console.log('Sound cleanup error:', e);
+        }
+      }, duration);
+      
+      console.log(`✅ ${type} beep sound played successfully`);
       
     } catch (error) {
-      console.log('Mobile beep creation error:', error);
+      console.log(`❌ ${type} sound error:`, error);
+      
+      // Fallback for web preview only
+      if (Platform.OS === 'web') {
+        try {
+          console.log(`🌐 Using web audio fallback for ${type}`);
+          
+          if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+            const audioContext = new (AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            const frequency = type === 'countdown' ? 800 : 1200;
+            const duration = type === 'countdown' ? 200 : 400;
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+            
+            console.log(`✅ Web fallback ${type} beep played`);
+          }
+        } catch (webError) {
+          console.log('Web audio fallback error:', webError);
+        }
+      }
     }
   };
 
