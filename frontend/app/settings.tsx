@@ -53,17 +53,36 @@ export default function Settings() {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch(`${EXPO_BACKEND_URL}/api/settings`);
-      if (response.ok) {
-        const settings: WorkoutSettings = await response.json();
-        setWorkTime(settings.workTime);
-        setRestTime(settings.restTime);
-        setSetsPerExercise(settings.setsPerExercise);
-        setCircuits(settings.circuits);
+      // First try to load from local storage (always available)
+      const savedSettings = await AsyncStorage.getItem('workoutSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        setWorkTime(settings.workTime || 40);
+        setRestTime(settings.restTime || 20);
+        setSetsPerExercise(settings.setsPerExercise || 3);
+        setCircuits(settings.circuits || 2);
         setExerciseOrder(settings.exerciseOrder || []);
+        console.log('Settings loaded from local storage');
+        return; // Use local storage data
+      }
+
+      // If no local storage, try backend (only in development)
+      const EXPO_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+      if (EXPO_BACKEND_URL) {
+        const response = await fetch(`${EXPO_BACKEND_URL}/api/settings`);
+        if (response.ok) {
+          const settings = await response.json();
+          setWorkTime(settings.workTime);
+          setRestTime(settings.restTime);
+          setSetsPerExercise(settings.setsPerExercise);
+          setCircuits(settings.circuits);
+          setExerciseOrder(settings.exerciseOrder || []);
+          console.log('Settings loaded from backend');
+        }
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
+      // Use defaults if everything fails
     }
   };
 
