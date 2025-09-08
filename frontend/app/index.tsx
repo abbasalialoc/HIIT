@@ -368,12 +368,14 @@ export default function ExerciseTimer() {
     loadAppData();
   }, []);
 
-  // Update timeLeft when workTime changes
+  // Cleanup keep-awake on unmount
   useEffect(() => {
-    if (timerState === 'ready') {
-      setTimeLeft(workTime);
-    }
-  }, [workTime, timerState]);
+    return () => {
+      // Always deactivate keep-awake when component unmounts
+      deactivateKeepAwake();
+      console.log('🧹 Cleanup: Screen keep-awake deactivated on unmount');
+    };
+  }, []);
 
   // Get active exercises only
   const activeExercises = exercises.filter(ex => ex.isActive);
