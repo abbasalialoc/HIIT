@@ -25,6 +25,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
