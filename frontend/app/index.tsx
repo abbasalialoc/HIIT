@@ -517,6 +517,44 @@ export default function ExerciseTimer() {
     setTimeLeft(workTime);
   };
 
+  const handleFeedback = () => {
+    Alert.alert(
+      "📝 Share Your Feedback",
+      "Help us improve Simple HIIT! Choose how you'd like to provide feedback:",
+      [
+        {
+          text: "📧 Email Feedback",
+          onPress: () => {
+            // You can replace this with your actual email
+            const email = "feedback@simplehiit.app";
+            const subject = "Simple HIIT App Feedback";
+            const body = "Hi! Here's my feedback about the Simple HIIT app:\n\n";
+            
+            if (Platform.OS === 'ios') {
+              Alert.alert("Email Feedback", `Please send your feedback to: ${email}`);
+            } else {
+              Alert.alert("Email Feedback", `Please send your feedback to: ${email}`);
+            }
+          }
+        },
+        {
+          text: "⭐ Rate on Store",
+          onPress: () => {
+            Alert.alert(
+              "Rate Simple HIIT", 
+              "Thank you! Please rate us on the Google Play Store to help other users discover Simple HIIT.",
+              [{ text: "OK", style: "default" }]
+            );
+          }
+        },
+        {
+          text: "❌ Cancel",
+          style: "cancel"
+        }
+      ]
+    );
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
