@@ -410,28 +410,33 @@ export default function ExerciseTimer() {
   const activeExercises = exercises.filter(ex => ex.isActive);
   const currentExercise = activeExercises[currentExerciseIndex];
 
-  // Timer logic with comprehensive wake lock error handling
+  // Timer logic with platform-aware wake lock handling
   useEffect(() => {
     if (timerState === 'work' || timerState === 'rest') {
-      // Keep screen awake during workout with comprehensive error handling
+      // Keep screen awake during workout - only on mobile platforms
       const activateWakeLock = async () => {
-        try {
-          // Check if wake lock is supported and allowed
-          if (typeof activateKeepAwake === 'function') {
-            // Wrap in additional try-catch for permissions policy errors
-            try {
-              await Promise.resolve(activateKeepAwake());
-              console.log('🌟 Screen keep-awake activated for workout');
-            } catch (policyError) {
-              console.log('⚠️ Keep-awake blocked by permissions policy:', policyError.message);
-              // Continue without wake lock - app still works normally
+        // Only activate wake lock on actual mobile devices, not web previews
+        if (Platform.OS === 'ios' || Platform.OS === 'android') {
+          try {
+            // Check if wake lock is supported and allowed
+            if (typeof activateKeepAwake === 'function') {
+              // Wrap in additional try-catch for permissions policy errors
+              try {
+                await Promise.resolve(activateKeepAwake());
+                console.log('🌟 Screen keep-awake activated for workout');
+              } catch (policyError) {
+                console.log('⚠️ Keep-awake blocked by permissions policy:', policyError.message);
+                // Continue without wake lock - app still works normally
+              }
+            } else {
+              console.log('⚠️ Keep-awake not supported in this environment');
             }
-          } else {
-            console.log('⚠️ Keep-awake not supported in this environment');
+          } catch (error) {
+            console.log('⚠️ Keep-awake activation failed:', error.message);
+            // Continue without wake lock - app still works normally
           }
-        } catch (error) {
-          console.log('⚠️ Keep-awake activation failed:', error.message);
-          // Continue without wake lock - app still works normally
+        } else {
+          console.log('📱 Keep-awake skipped - not on mobile platform');
         }
       };
       
@@ -464,19 +469,24 @@ export default function ExerciseTimer() {
     } else {
       // Allow screen to sleep when not actively working out
       const deactivateWakeLock = async () => {
-        try {
-          if (typeof deactivateKeepAwake === 'function') {
-            try {
-              await Promise.resolve(deactivateKeepAwake());
-              console.log('😴 Screen keep-awake deactivated');
-            } catch (policyError) {
-              console.log('⚠️ Keep-awake deactivation blocked by permissions policy:', policyError.message);
-              // Continue normally - not critical if deactivation fails
+        // Only deactivate wake lock on actual mobile devices
+        if (Platform.OS === 'ios' || Platform.OS === 'android') {
+          try {
+            if (typeof deactivateKeepAwake === 'function') {
+              try {
+                await Promise.resolve(deactivateKeepAwake());
+                console.log('😴 Screen keep-awake deactivated');
+              } catch (policyError) {
+                console.log('⚠️ Keep-awake deactivation blocked by permissions policy:', policyError.message);
+                // Continue normally - not critical if deactivation fails
+              }
             }
+          } catch (error) {
+            console.log('⚠️ Keep-awake deactivation failed:', error.message);
+            // Continue normally - not critical if deactivation fails
           }
-        } catch (error) {
-          console.log('⚠️ Keep-awake deactivation failed:', error.message);
-          // Continue normally - not critical if deactivation fails
+        } else {
+          console.log('📱 Keep-awake deactivation skipped - not on mobile platform');
         }
       };
       
