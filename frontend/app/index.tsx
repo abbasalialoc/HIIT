@@ -8,7 +8,10 @@ import {
   Dimensions,
   Platform,
   Alert,
-  Image
+  Image,
+  Modal,
+  TextInput,
+  ScrollView
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Line, Circle, G } from 'react-native-svg';
@@ -26,6 +29,7 @@ import { router } from 'expo-router';
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import * as MailComposer from 'expo-mail-composer';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
