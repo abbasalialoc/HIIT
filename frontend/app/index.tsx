@@ -1025,7 +1025,9 @@ const styles = StyleSheet.create({
   },
   pausedControls: {
     flexDirection: 'row',
+    justifyContent: 'center',
     gap: 12,
+    alignItems: 'center',
   },
   resumeButton: {
     backgroundColor: '#4ecdc4',
