@@ -526,41 +526,75 @@ export default function ExerciseTimer() {
   };
 
   const handleFeedback = () => {
-    Alert.alert(
-      "📝 Share Your Feedback",
-      "Help us improve Simple HIIT! Choose how you'd like to provide feedback:",
-      [
-        {
-          text: "📧 Email Feedback",
-          onPress: () => {
-            // You can replace this with your actual email
-            const email = "feedback@simplehiit.app";
-            const subject = "Simple HIIT App Feedback";
-            const body = "Hi! Here's my feedback about the Simple HIIT app:\n\n";
-            
-            if (Platform.OS === 'ios') {
-              Alert.alert("Email Feedback", `Please send your feedback to: ${email}`);
-            } else {
-              Alert.alert("Email Feedback", `Please send your feedback to: ${email}`);
-            }
-          }
-        },
-        {
-          text: "⭐ Rate on Store",
-          onPress: () => {
-            Alert.alert(
-              "Rate Simple HIIT", 
-              "Thank you! Please rate us on the Google Play Store to help other users discover Simple HIIT.",
-              [{ text: "OK", style: "default" }]
-            );
-          }
-        },
-        {
-          text: "❌ Cancel",
-          style: "cancel"
-        }
-      ]
-    );
+    setFeedbackModalVisible(true);
+  };
+
+  const sendFeedback = async () => {
+    if (!feedbackText.trim()) {
+      Alert.alert("Empty Feedback", "Please enter your feedback before sending.");
+      return;
+    }
+
+    try {
+      // Check if mail composer is available
+      const isAvailable = await MailComposer.isAvailableAsync();
+      
+      if (isAvailable) {
+        // Compose and send email
+        await MailComposer.composeAsync({
+          recipients: ['feedback@simplehiit.app'], // Replace with your actual email
+          subject: 'Simple HIIT App Feedback',
+          body: `
+Hi Simple HIIT Team,
+
+Here's my feedback about the app:
+
+${feedbackText}
+
+---
+App Version: 1.0.5
+Platform: ${Platform.OS}
+Device: ${Platform.OS === 'ios' ? 'iOS' : 'Android'}
+
+Thanks for creating this awesome workout app!
+          `.trim(),
+          isHtml: false,
+        });
+        
+        // Reset and close modal
+        setFeedbackText('');
+        setFeedbackModalVisible(false);
+        
+        Alert.alert(
+          "Thank You!", 
+          "Your feedback has been sent successfully. We appreciate your input!"
+        );
+      } else {
+        // Fallback for devices without mail app
+        Alert.alert(
+          "Email Not Available",
+          `Please send your feedback manually to: feedback@simplehiit.app\n\nYour feedback:\n${feedbackText}`,
+          [
+            { text: "Copy Email", onPress: () => {
+              // In a real app, you'd copy to clipboard here
+              console.log("Copy email to clipboard");
+            }},
+            { text: "OK" }
+          ]
+        );
+      }
+    } catch (error) {
+      console.log('Error sending feedback:', error);
+      Alert.alert(
+        "Email Error", 
+        "Unable to send email. Please try again or contact us directly at feedback@simplehiit.app"
+      );
+    }
+  };
+
+  const closeFeedbackModal = () => {
+    setFeedbackModalVisible(false);
+    setFeedbackText('');
   };
 
   const formatTime = (seconds: number) => {
