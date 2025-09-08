@@ -33,7 +33,7 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.simplehiit.app",
-      "versionCode": 6,
+      "versionCode": 7,
       "permissions": [
         "android.permission.VIBRATE"
       ],
