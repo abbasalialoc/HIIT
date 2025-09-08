@@ -1110,26 +1110,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 2,
   },
-  feedbackContainer: {
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  feedbackButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(78, 205, 196, 0.1)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#4ecdc4',
-  },
-  feedbackText: {
-    color: '#4ecdc4',
-    fontSize: 12,
-    fontWeight: '600',
-    marginLeft: 6,
-  },
   // Modal styles
   modalOverlay: {
     flex: 1,
