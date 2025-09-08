@@ -202,6 +202,10 @@ export default function ExerciseTimer() {
   // Loading state
   const [loading, setLoading] = useState(true);
 
+  // Feedback modal state
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [feedbackText, setFeedbackText] = useState('');
+
   // Timer reference
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
