@@ -379,9 +379,13 @@ export default function ExerciseTimer() {
   const activeExercises = exercises.filter(ex => ex.isActive);
   const currentExercise = activeExercises[currentExerciseIndex];
 
-  // Timer logic
+  // Timer logic with keep-awake functionality
   useEffect(() => {
     if (timerState === 'work' || timerState === 'rest') {
+      // Keep screen awake during workout
+      activateKeepAwake();
+      console.log('🌟 Screen keep-awake activated for workout');
+      
       intervalRef.current = setInterval(() => {
         setTimeLeft(prev => {
           // Play countdown beeps for last 3 seconds
@@ -406,6 +410,10 @@ export default function ExerciseTimer() {
         });
       }, 1000);
     } else {
+      // Allow screen to sleep when not actively working out
+      deactivateKeepAwake();
+      console.log('😴 Screen keep-awake deactivated');
+      
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
