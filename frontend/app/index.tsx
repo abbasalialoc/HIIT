@@ -376,22 +376,26 @@ export default function ExerciseTimer() {
     loadAppData();
   }, []);
 
-  // Cleanup keep-awake on unmount with comprehensive error handling
+  // Cleanup keep-awake on unmount - platform-aware
   useEffect(() => {
     return () => {
-      // Always deactivate keep-awake when component unmounts
+      // Always deactivate keep-awake when component unmounts - only on mobile
       const cleanupWakeLock = async () => {
-        try {
-          if (typeof deactivateKeepAwake === 'function') {
-            try {
-              await Promise.resolve(deactivateKeepAwake());
-              console.log('🧹 Cleanup: Screen keep-awake deactivated on unmount');
-            } catch (policyError) {
-              console.log('⚠️ Cleanup: Keep-awake deactivation blocked by permissions policy:', policyError.message);
+        if (Platform.OS === 'ios' || Platform.OS === 'android') {
+          try {
+            if (typeof deactivateKeepAwake === 'function') {
+              try {
+                await Promise.resolve(deactivateKeepAwake());
+                console.log('🧹 Cleanup: Screen keep-awake deactivated on unmount');
+              } catch (policyError) {
+                console.log('⚠️ Cleanup: Keep-awake deactivation blocked by permissions policy:', policyError.message);
+              }
             }
+          } catch (error) {
+            console.log('⚠️ Cleanup: Keep-awake deactivation failed:', error.message);
           }
-        } catch (error) {
-          console.log('⚠️ Cleanup: Keep-awake deactivation failed:', error.message);
+        } else {
+          console.log('📱 Cleanup: Keep-awake cleanup skipped - not on mobile platform');
         }
       };
       
