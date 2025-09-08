@@ -983,7 +983,7 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingVertical: 16,
   },
   startButton: {
     backgroundColor: '#4ecdc4',
