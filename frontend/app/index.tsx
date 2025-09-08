@@ -721,10 +721,15 @@ Thanks for creating this awesome workout app!
           {/* Control Buttons */}
           <View style={styles.controlsContainer}>
             {timerState === 'ready' && (
-              <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
-                <Ionicons name="play" size={24} color="#fff" />
-                <Text style={styles.buttonText}>Start Workout</Text>
-              </TouchableOpacity>
+              <View style={styles.readyControls}>
+                <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
+                  <Ionicons name="play" size={24} color="#fff" />
+                  <Text style={styles.buttonText}>Start Workout</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.feedbackButtonSmall} onPress={handleFeedback}>
+                  <Ionicons name="chatbubble-outline" size={16} color="#4ecdc4" />
+                </TouchableOpacity>
+              </View>
             )}
 
             {(timerState === 'work' || timerState === 'rest') && (
@@ -736,6 +741,9 @@ Thanks for creating this awesome workout app!
                 <TouchableOpacity style={styles.skipButton} onPress={skipToNext}>
                   <Ionicons name="play-forward" size={20} color="#fff" />
                   <Text style={styles.buttonText}>Skip</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.feedbackButtonSmall} onPress={handleFeedback}>
+                  <Ionicons name="chatbubble-outline" size={16} color="#4ecdc4" />
                 </TouchableOpacity>
               </View>
             )}
@@ -750,14 +758,22 @@ Thanks for creating this awesome workout app!
                   <Ionicons name="refresh" size={20} color="#fff" />
                   <Text style={styles.buttonText}>Reset</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.feedbackButtonSmall} onPress={handleFeedback}>
+                  <Ionicons name="chatbubble-outline" size={16} color="#4ecdc4" />
+                </TouchableOpacity>
               </View>
             )}
 
             {timerState === 'finished' && (
-              <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
-                <Ionicons name="refresh" size={24} color="#fff" />
-                <Text style={styles.buttonText}>Start New Workout</Text>
-              </TouchableOpacity>
+              <View style={styles.finishedControls}>
+                <TouchableOpacity style={styles.resetButton} onPress={resetWorkout}>
+                  <Ionicons name="refresh" size={24} color="#fff" />
+                  <Text style={styles.buttonText}>Start New Workout</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.feedbackButtonSmall} onPress={handleFeedback}>
+                  <Ionicons name="chatbubble-outline" size={16} color="#4ecdc4" />
+                </TouchableOpacity>
+              </View>
             )}
           </View>
 
