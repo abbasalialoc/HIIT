@@ -376,16 +376,26 @@ export default function ExerciseTimer() {
     loadAppData();
   }, []);
 
-  // Cleanup keep-awake on unmount with error handling
+  // Cleanup keep-awake on unmount with comprehensive error handling
   useEffect(() => {
     return () => {
       // Always deactivate keep-awake when component unmounts
-      try {
-        deactivateKeepAwake();
-        console.log('🧹 Cleanup: Screen keep-awake deactivated on unmount');
-      } catch (error) {
-        console.log('⚠️ Cleanup: Keep-awake deactivation failed:', error);
-      }
+      const cleanupWakeLock = async () => {
+        try {
+          if (typeof deactivateKeepAwake === 'function') {
+            try {
+              await Promise.resolve(deactivateKeepAwake());
+              console.log('🧹 Cleanup: Screen keep-awake deactivated on unmount');
+            } catch (policyError) {
+              console.log('⚠️ Cleanup: Keep-awake deactivation blocked by permissions policy:', policyError.message);
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ Cleanup: Keep-awake deactivation failed:', error.message);
+        }
+      };
+      
+      cleanupWakeLock();
     };
   }, []);
 
