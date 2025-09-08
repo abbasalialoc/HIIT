@@ -993,9 +993,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  readyControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
   activeControls: {
     flexDirection: 'row',
+    justifyContent: 'center',
     gap: 12,
+    alignItems: 'center',
   },
   pauseButton: {
     backgroundColor: '#ff6b6b',
