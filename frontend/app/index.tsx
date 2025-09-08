@@ -721,6 +721,14 @@ export default function ExerciseTimer() {
             </View>
           </View>
 
+          {/* Feedback Button */}
+          <View style={styles.feedbackContainer}>
+            <TouchableOpacity style={styles.feedbackButton} onPress={handleFeedback}>
+              <Ionicons name="chatbubble-outline" size={16} color="#4ecdc4" />
+              <Text style={styles.feedbackText}>Feedback</Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Ad Area - Placeholder */}
           <View style={styles.adContainer}>
             <Text style={styles.adPlaceholder}>Advertisement Area</Text>
