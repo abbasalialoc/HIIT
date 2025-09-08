@@ -33,7 +33,7 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.simplehiit.app",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": [
         "android.permission.VIBRATE",
         "android.permission.WAKE_LOCK"
