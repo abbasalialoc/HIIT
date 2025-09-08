@@ -778,6 +778,68 @@ Thanks for creating this awesome workout app!
           </View>
         </>
       )}
+
+      {/* Feedback Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={feedbackModalVisible}
+        onRequestClose={closeFeedbackModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>📝 Send Feedback</Text>
+              <TouchableOpacity 
+                style={styles.closeButton}
+                onPress={closeFeedbackModal}
+              >
+                <Ionicons name="close" size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
+            
+            <Text style={styles.modalDescription}>
+              Help us improve Simple HIIT! Share your thoughts, suggestions, or report any issues:
+            </Text>
+            
+            <ScrollView style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInput}
+                multiline={true}
+                numberOfLines={8}
+                placeholder="Type your feedback here..."
+                placeholderTextColor="#666"
+                value={feedbackText}
+                onChangeText={setFeedbackText}
+                maxLength={1000}
+                textAlignVertical="top"
+              />
+            </ScrollView>
+            
+            <Text style={styles.characterCount}>
+              {feedbackText.length}/1000 characters
+            </Text>
+            
+            <View style={styles.modalButtons}>
+              <TouchableOpacity 
+                style={styles.cancelButton}
+                onPress={closeFeedbackModal}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.sendButton, !feedbackText.trim() && styles.sendButtonDisabled]}
+                onPress={sendFeedback}
+                disabled={!feedbackText.trim()}
+              >
+                <Ionicons name="send" size={16} color="#fff" />
+                <Text style={styles.sendButtonText}>Send Feedback</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
