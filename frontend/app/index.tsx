@@ -400,17 +400,33 @@ export default function ExerciseTimer() {
   const activeExercises = exercises.filter(ex => ex.isActive);
   const currentExercise = activeExercises[currentExerciseIndex];
 
-  // Timer logic with proper keep-awake functionality
+  // Timer logic with comprehensive wake lock error handling
   useEffect(() => {
     if (timerState === 'work' || timerState === 'rest') {
-      // Keep screen awake during workout with error handling
-      try {
-        activateKeepAwake();
-        console.log('🌟 Screen keep-awake activated for workout');
-      } catch (error) {
-        console.log('⚠️ Keep-awake activation failed:', error);
-        // Continue without keep-awake if it fails
-      }
+      // Keep screen awake during workout with comprehensive error handling
+      const activateWakeLock = async () => {
+        try {
+          // Check if wake lock is supported and allowed
+          if (typeof activateKeepAwake === 'function') {
+            // Wrap in additional try-catch for permissions policy errors
+            try {
+              await Promise.resolve(activateKeepAwake());
+              console.log('🌟 Screen keep-awake activated for workout');
+            } catch (policyError) {
+              console.log('⚠️ Keep-awake blocked by permissions policy:', policyError.message);
+              // Continue without wake lock - app still works normally
+            }
+          } else {
+            console.log('⚠️ Keep-awake not supported in this environment');
+          }
+        } catch (error) {
+          console.log('⚠️ Keep-awake activation failed:', error.message);
+          // Continue without wake lock - app still works normally
+        }
+      };
+      
+      // Call async function
+      activateWakeLock();
       
       intervalRef.current = setInterval(() => {
         setTimeLeft(prev => {
@@ -437,13 +453,25 @@ export default function ExerciseTimer() {
       }, 1000);
     } else {
       // Allow screen to sleep when not actively working out
-      try {
-        deactivateKeepAwake();
-        console.log('😴 Screen keep-awake deactivated');
-      } catch (error) {
-        console.log('⚠️ Keep-awake deactivation failed:', error);
-        // Continue normally if deactivation fails
-      }
+      const deactivateWakeLock = async () => {
+        try {
+          if (typeof deactivateKeepAwake === 'function') {
+            try {
+              await Promise.resolve(deactivateKeepAwake());
+              console.log('😴 Screen keep-awake deactivated');
+            } catch (policyError) {
+              console.log('⚠️ Keep-awake deactivation blocked by permissions policy:', policyError.message);
+              // Continue normally - not critical if deactivation fails
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ Keep-awake deactivation failed:', error.message);
+          // Continue normally - not critical if deactivation fails
+        }
+      };
+      
+      // Call async function
+      deactivateWakeLock();
       
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
